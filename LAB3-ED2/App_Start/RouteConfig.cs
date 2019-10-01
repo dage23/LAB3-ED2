@@ -16,7 +16,7 @@ namespace LAB3_ED2
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Encriptacion", action = "Menu", id = UrlParameter.Optional }
             );
         }
     }
