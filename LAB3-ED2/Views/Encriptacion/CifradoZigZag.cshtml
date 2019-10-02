@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "CifradoZigZag";
+}
+
+<h2>Cifrado con método Zig-Zag</h2>
+@using (Html.BeginForm("CifradoZigZag", "Encriptacion", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <h2></h2>
+    <h4>Ingrese el nivel de separación</h4>
+    <input type="number" name="CantidadNiveles">
+    <h3></h3>
+    <h4>Ingrese el archivo</h4>
+    <input type="file" name="ArchivoImportado" />
+    <h3></h3>
+    <p>
+        Acción a realizar:
+        <input type="radio" name="Opcion" value="Cifrar"> Cifrar
+        <input type="radio" name="Opcion" value="Descifrar"> Descifrar
+    </p>
+    <input type="submit" value="Importar" class="btn btn-default" />
+}
+<h2></h2>
