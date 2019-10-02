@@ -50,5 +50,79 @@ namespace LAB3_ED2.Models
             }
             return TextoEncriptado;
         }
+        public string DecryptZZ(string TextoEncriptado, int CantidadNiveles)
+        {
+            //Creacion y llenado de matriz
+            var MatrizCifrada = new char[CantidadNiveles, TextoEncriptado.Length];
+            for (int i = 0; i < CantidadNiveles; i++)
+            {
+                for (int j = 0; j < TextoEncriptado.Length; j++)
+                {
+                    MatrizCifrada[i, j] = '~';
+                }
+            }
+            //Hacer el recorrido en zig zag
+            var HaciaAbajo = false;
+            var Fila = 0; var Columna = 0;
+            for (int i = 0; i < TextoEncriptado.Length; i++)
+            {
+                if (Fila == 0)
+                {
+                    HaciaAbajo = true;
+                }
+                if (Fila == CantidadNiveles - 1)
+                {
+                    HaciaAbajo = false;
+                }
+                MatrizCifrada[Fila, Columna++] = '$';
+                if (HaciaAbajo)
+                {
+                    Fila++;
+                }
+                else
+                {
+                    Fila--;
+                }
+            }
+            //Colocar los caracteres encriptados en la matriz
+            var PosicionActual = 0;
+            for (int i = 0; i < CantidadNiveles; i++)
+            {
+                for (int j = 0; j < TextoEncriptado.Length; j++)
+                {
+                    if (MatrizCifrada[i, j] == '$' && PosicionActual < TextoEncriptado.Length)
+                    {
+                        MatrizCifrada[i, j] = TextoEncriptado[PosicionActual++];
+                    }
+                }
+            }
+            //Desencriptar el texto
+            var TextoDescifrado = string.Empty;
+            Fila = 0; Columna = 0;
+            for (int i = 0; i < TextoEncriptado.Length; i++)
+            {
+                if (Fila == 0)
+                {
+                    HaciaAbajo = true;
+                }
+                if (Fila == CantidadNiveles - 1)
+                {
+                    HaciaAbajo = false;
+                }
+                if (MatrizCifrada[Fila, Columna] != '$')
+                {
+                    TextoDescifrado += (MatrizCifrada[Fila, Columna++]);
+                }
+                if (HaciaAbajo)
+                {
+                    Fila++;
+                }
+                else
+                {
+                    Fila--;
+                }
+            }
+            return TextoDescifrado;
+        }
     }
 }
