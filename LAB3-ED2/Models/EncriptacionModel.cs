@@ -163,6 +163,8 @@ namespace LAB3_ED2.Models
             }
             return DiccionarioCifrado;
         }
+
+
         public string EncryptionSpiral(string TextoOriginal, int Ancho)
         {
             var DivisionAncho = Math.Ceiling(Convert.ToDecimal(TextoOriginal.Length) / Convert.ToDecimal(Ancho));
@@ -189,7 +191,49 @@ namespace LAB3_ED2.Models
             CapaSuperior(Matriz, 0, 0, Ancho - 1, Altura - 1);          
             return TextoCryptedEspiral;
         }
-        public string DecryptionSpiral(string TextoEncripcion, int Ancho) { return null; }
+        
+        public string DecryptionSpiral(string TextoEncripcion, int Ancho)
+        {
+            var DivisionAncho = Math.Ceiling(Convert.ToDecimal(TextoEncripcion.Length) / Convert.ToDecimal(Ancho));
+            var Altura = Convert.ToInt32(DivisionAncho);
+            char[,] DCircularMatriz;
+            DCircularMatriz = new char[Ancho,Altura];
+
+            var CantidadIteraciones = Ancho / 2;
+            var PosicionTexto = 0;
+            var AnchoAux = Ancho;
+            var AltoAux = Altura;
+            for (int i = 0; i < CantidadIteraciones; i++)
+            {
+                for (int j = i; j < AltoAux+i; j++)
+                {
+                    DCircularMatriz[i, j] = TextoEncripcion[PosicionTexto];
+                    PosicionTexto++;
+                }
+                for (int j = i+1; j < AnchoAux+i; j++)
+                {
+                    DCircularMatriz[j, AltoAux-1+i] = TextoEncripcion[PosicionTexto];
+                    PosicionTexto++;
+                }
+                for (int j = AltoAux-2+i; j <= i; j--)
+                {
+                    DCircularMatriz[AnchoAux-1+i, j] = TextoEncripcion[PosicionTexto];
+                    PosicionTexto++;
+                }
+                for (int j = AnchoAux-2+i; j <i; j++)
+                {
+                    DCircularMatriz[j,i] = TextoEncripcion[PosicionTexto];
+                    PosicionTexto++;
+                }
+                AnchoAux = AnchoAux - 2;
+                AltoAux = AltoAux - 2;
+            }
+
+
+            return null;
+        }
+        
+
         void CapaSuperior(char[,] matriz, int InicioPosX, int InicioPosY,int FinPosX, int FinPosY)
         {
             var i = 0;var j = 0;

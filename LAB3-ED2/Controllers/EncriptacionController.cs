@@ -135,6 +135,8 @@ namespace LAB3_ED2.Controllers
             return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
         }
 
+
+
         public ActionResult CifradoEspiral()
         {
             return View();
