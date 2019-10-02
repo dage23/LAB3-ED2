@@ -14,12 +14,14 @@ namespace LAB3_ED2.Controllers
         {
             return View();
         }
+        public ActionResult MenuEspiral()
+        { return View(); }
         public ActionResult CifradoZigZag()
         {
             return View();
         }
         [HttpPost]
-        public ActionResult CifradoZigZag(HttpPostedFileBase ArchivoImportado,int CantidadNiveles,string Opcion)
+        public ActionResult CifradoZigZag(HttpPostedFileBase ArchivoImportado, int CantidadNiveles, string Opcion)
         {
             Directory.CreateDirectory(Server.MapPath(@"~/App_Data/"));
             var ExtensionNuevoArchivo = string.Empty;
@@ -131,6 +133,70 @@ namespace LAB3_ED2.Controllers
             }
             var FileVirtualPath = @"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo;
             return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
-        }        
+        }
+
+        public ActionResult CifradoEspiral()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult CifradoEspiral(HttpPostedFileBase ArchivoImportado, int Altura)
+        {
+            Directory.CreateDirectory(Server.MapPath(@"~/App_Data/"));
+            var ExtensionNuevoArchivo = string.Empty;
+            var NombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
+            var ExtensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
+            if (ArchivoImportado != null)
+            {
+                using (var Lectura = new StreamReader(ArchivoImportado.InputStream))
+                {
+                    var TextoArchivo = Lectura.ReadToEnd();                   
+                    if (ExtensionArchivo == ".txt")
+                    {
+                        ExtensionNuevoArchivo = ".cif";
+                        var TextoCifrado = new EncriptacionModel().EncryptionSpiral(TextoArchivo, Altura);
+                        using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
+                        {
+                            using (var writer = new StreamWriter(writeStream))
+                            {
+                                writer.Write(TextoCifrado);
+                            }
+                        }
+                    }
+                }
+
+            }
+            var FileVirtualPath = @"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo;
+            return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
+        }
+        public ActionResult DescifradoEspiral() { return View(); }
+        [HttpPost]
+        public ActionResult DescifradoEspiral(HttpPostedFileBase ArchivoImportado, int Ancho)
+        {
+            Directory.CreateDirectory(Server.MapPath(@"~/App_Data/"));
+            var ExtensionNuevoArchivo = string.Empty;
+            var NombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
+            var ExtensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
+            if (ArchivoImportado != null)
+            {
+                using (var Lectura = new StreamReader(ArchivoImportado.InputStream))
+                {
+                    var TextoArchivo = Lectura.ReadToEnd();
+                    if (ExtensionArchivo == ".cif")
+                    {
+                        ExtensionNuevoArchivo = ".txt";
+                        var TextoDescifrado = new EncriptacionModel().DecryptionSpiral(TextoArchivo, Ancho);
+                        using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
+                        {
+                            using (var writer = new StreamWriter(writeStream))
+                            {
+                                writer.Write(TextoDescifrado);
+                            }
+                        }
+                    }
+                }
+            }
+            return View();
+        }
     }
 }

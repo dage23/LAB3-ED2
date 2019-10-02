@@ -162,5 +162,8 @@ namespace LAB3_ED2.Models
             }
             return DiccionarioCifrado;
         }
+        public string EncryptionSpiral(string TextoOriginal,int Altura) { return null; }
+        public string DecryptionSpiral(string TextoEncripcion, int Ancho) { return null; }
+
     }
 }
