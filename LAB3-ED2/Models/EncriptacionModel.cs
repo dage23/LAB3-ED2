@@ -252,7 +252,7 @@ namespace LAB3_ED2.Models
                 AnchoAux = 0;
                 AltoAux = 0;
             }
-            else if (AltoAux == 1)
+            if (AltoAux == 1)
             {
                 for (int i = CantidadIteraciones; i < AnchoAux + CantidadIteraciones; i++)
                 {
@@ -262,8 +262,15 @@ namespace LAB3_ED2.Models
                 AnchoAux = 0;
                 AltoAux = 0;
             }
-
-            return null;
+            var TextoDescifrado = string.Empty;
+            for (int i = 0; i < Altura; i++)
+            {
+                for (int j = 0; j < Ancho; j++)
+                {
+                    TextoDescifrado = TextoDescifrado + DCircularMatriz[j, i];
+                }
+            }
+            return TextoDescifrado;
         }
         
 
