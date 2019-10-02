@@ -9,6 +9,7 @@ namespace LAB3_ED2.Controllers
 {
     public class EncriptacionController : Controller
     {
+        const int bufferLength = 100;
         public ActionResult Menu()
         {
             return View();
@@ -59,5 +60,77 @@ namespace LAB3_ED2.Controllers
             var FileVirtualPath = @"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo;
             return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
         }
+        public ActionResult CifradoCesar()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult CifradoCesar(HttpPostedFileBase ArchivoImportado, string clave, string Opcion)
+        {
+            var OpcionDeCifrado = true;
+            if (Opcion == "Descifrar")
+            {
+                OpcionDeCifrado = false;
+            }
+            var ExtensionNuevoArchivo = string.Empty;
+            var NombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
+            var ExtensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
+            if (ArchivoImportado != null)
+            {
+
+                var DiccionarioCifrado = new Dictionary<char, char>();
+                var Cesar = new EncriptacionModel();
+                DiccionarioCifrado = Cesar.DiccionarioCesar(clave, OpcionDeCifrado);
+
+                if (!OpcionDeCifrado && ExtensionArchivo == ".cif")
+                {
+                    ExtensionNuevoArchivo = ".txt";
+                }
+                if (OpcionDeCifrado && ExtensionArchivo == ".txt")
+                {
+                    ExtensionNuevoArchivo = ".cif";
+                }
+                if (ExtensionNuevoArchivo != null)
+                {
+                    using (var Lectura = new BinaryReader(ArchivoImportado.InputStream))
+                    {
+                        using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
+                        {
+                            using (var writer = new BinaryWriter(writeStream))
+                            {
+                                var byteBuffer = new byte[bufferLength];
+                                while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
+                                {
+                                    byteBuffer = Lectura.ReadBytes(bufferLength);
+                                    foreach (var item in byteBuffer)
+                                    {
+                                        if (DiccionarioCifrado.ContainsKey(Convert.ToChar(item)))
+                                        {
+                                            var ByteEscrito = DiccionarioCifrado[Convert.ToChar(item)];
+                                            writer.Write(ByteEscrito);
+                                        }
+                                        else
+                                        {
+                                            writer.Write(item);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    //Danger("El archivo tiene un formato erroneo.", true);
+                }
+
+            }
+            else
+            {
+                //Danger("El archivo es nulo.", true);
+            }
+            var FileVirtualPath = @"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo;
+            return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
+        }        
     }
 }

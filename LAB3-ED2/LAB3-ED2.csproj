@@ -162,6 +162,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Encriptacion\Menu.cshtml" />
     <Content Include="Views\Encriptacion\CifradoZigZag.cshtml" />
+    <Content Include="Views\Encriptacion\CifradoCesar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
