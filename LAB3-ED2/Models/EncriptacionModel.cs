@@ -156,10 +156,7 @@ namespace LAB3_ED2.Models
                     ContadorAbecedario++;
                 }
             }
-            //if (!Opcion)
-            //{
-            //    DiccionarioCifrado = DiccionarioCifrado.ToDictionary(kp => kp.Value, kp => kp.Key);
-            //}
+            
             return DiccionarioCifrado;
         }
     }
