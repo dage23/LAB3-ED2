@@ -129,7 +129,8 @@ namespace LAB3_ED2.Controllers
             {
                 //Danger("El archivo es nulo.", true);
             }
-            return View();      
+            var FileVirtualPath = @"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo;
+            return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
         }        
     }
 }
