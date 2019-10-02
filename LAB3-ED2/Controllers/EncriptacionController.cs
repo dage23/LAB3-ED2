@@ -59,5 +59,16 @@ namespace LAB3_ED2.Controllers
             var FileVirtualPath = @"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo;
             return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
         }
+        public ActionResult CifradoCesar()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult CifradoCesar(HttpPostedFileBase ArchivoImportado, string clave, string Opcion)
+        {
+            return View();
+        }
+
+
     }
 }

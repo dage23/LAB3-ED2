@@ -1,0 +1,28 @@
+﻿
+@{
+    ViewBag.Title = "CifradoCesar";
+}
+
+<h2>Cifrado con método Cesar</h2>
+@using (Html.BeginForm("CifradoCesar", "SerieI", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <h2></h2>
+    <p>
+        Clave:
+        <input type="text" name="clave">
+    </p>
+    <p>
+        Archivo:
+        <input type="file" name="ArchivoImportado" />
+    </p>
+    <p>
+        Acción a realizar:
+        <input type="radio" name="Opcion" value="Cifrar"> Cifrar
+        <input type="radio" name="Opcion" value="Descifrar"> Descifrar
+    </p>
+
+
+    <input type="submit" value="Importar" class="btn btn-default" />
+
+}
+
