@@ -162,8 +162,36 @@ namespace LAB3_ED2.Models
             }
             return DiccionarioCifrado;
         }
-        public string EncryptionSpiral(string TextoOriginal,int Altura) { return null; }
+        public string EncryptionSpiral(string TextoOriginal,int Ancho)
+        {
+            var DivisionAncho=Math.Ceiling(Convert.ToDecimal(TextoOriginal.Length)/Convert.ToDecimal(Ancho));
+            var Altura = Convert.ToInt32(DivisionAncho);
+            var Matriz=new char[Ancho,Altura];
+            for(int i=0;i<Ancho;i++)
+            {
+                for(int j=0;j<Altura;j++)
+                {
+                    Matriz[i,j]='@';
+                }
+            }
+            var Fila =0;var Columna=0;
+            for(int i=0;i<TextoOriginal.Length;i++)
+            {
+                if (Fila == Ancho)
+                {
+                    Columna++;
+                    Fila = 0;
+                }
+                //if (Columna==Altura)
+                //{
+                //    break;
+                //}
+                Matriz[Fila,Columna]=TextoOriginal[i];
+                Fila++;
+            }
+             return null; 
+        }
         public string DecryptionSpiral(string TextoEncripcion, int Ancho) { return null; }
-
+            
     }
 }

@@ -140,7 +140,7 @@ namespace LAB3_ED2.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult CifradoEspiral(HttpPostedFileBase ArchivoImportado, int Altura)
+        public ActionResult CifradoEspiral(HttpPostedFileBase ArchivoImportado, int Ancho)
         {
             Directory.CreateDirectory(Server.MapPath(@"~/App_Data/"));
             var ExtensionNuevoArchivo = string.Empty;
@@ -154,7 +154,7 @@ namespace LAB3_ED2.Controllers
                     if (ExtensionArchivo == ".txt")
                     {
                         ExtensionNuevoArchivo = ".cif";
-                        var TextoCifrado = new EncriptacionModel().EncryptionSpiral(TextoArchivo, Altura);
+                        var TextoCifrado = new EncriptacionModel().EncryptionSpiral(TextoArchivo, Ancho);
                         using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
                         {
                             using (var writer = new StreamWriter(writeStream))
@@ -171,7 +171,7 @@ namespace LAB3_ED2.Controllers
         }
         public ActionResult DescifradoEspiral() { return View(); }
         [HttpPost]
-        public ActionResult DescifradoEspiral(HttpPostedFileBase ArchivoImportado, int Ancho)
+        public ActionResult DescifradoEspiral(HttpPostedFileBase ArchivoImportado, int Altura)
         {
             Directory.CreateDirectory(Server.MapPath(@"~/App_Data/"));
             var ExtensionNuevoArchivo = string.Empty;
@@ -185,7 +185,7 @@ namespace LAB3_ED2.Controllers
                     if (ExtensionArchivo == ".cif")
                     {
                         ExtensionNuevoArchivo = ".txt";
-                        var TextoDescifrado = new EncriptacionModel().DecryptionSpiral(TextoArchivo, Ancho);
+                        var TextoDescifrado = new EncriptacionModel().DecryptionSpiral(TextoArchivo, Altura);
                         using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
                         {
                             using (var writer = new StreamWriter(writeStream))
