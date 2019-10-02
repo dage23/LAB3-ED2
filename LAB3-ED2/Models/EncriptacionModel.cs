@@ -196,39 +196,72 @@ namespace LAB3_ED2.Models
         {
             var DivisionAncho = Math.Ceiling(Convert.ToDecimal(TextoEncripcion.Length) / Convert.ToDecimal(Ancho));
             var Altura = Convert.ToInt32(DivisionAncho);
-            char[,] DCircularMatriz;
-            DCircularMatriz = new char[Ancho,Altura];
-
-            var CantidadIteraciones = Ancho / 2;
+            var DCircularMatriz = new char[Ancho, Altura];
+            var CantidadIteraciones = 0;
+            if (Ancho < Altura)
+            {
+                CantidadIteraciones = Ancho / 2;
+            }
+            else
+            {
+                CantidadIteraciones = Altura / 2;
+            }
+            if (TextoEncripcion.Length < (Ancho * Altura))
+            {
+                var Longitud = TextoEncripcion.Length;
+                for (int i = Longitud; i < (Ancho * Altura); i++)
+                {
+                    TextoEncripcion = TextoEncripcion + " ";
+                }
+            }
             var PosicionTexto = 0;
             var AnchoAux = Ancho;
             var AltoAux = Altura;
             for (int i = 0; i < CantidadIteraciones; i++)
             {
-                for (int j = i; j < AltoAux+i; j++)
+                for (int j = i; j < AltoAux + i; j++)
                 {
                     DCircularMatriz[i, j] = TextoEncripcion[PosicionTexto];
                     PosicionTexto++;
                 }
-                for (int j = i+1; j < AnchoAux+i; j++)
+                for (int j = i + 1; j < AnchoAux + i; j++)
                 {
-                    DCircularMatriz[j, AltoAux-1+i] = TextoEncripcion[PosicionTexto];
+                    DCircularMatriz[j, AltoAux - 1 + i] = TextoEncripcion[PosicionTexto];
                     PosicionTexto++;
                 }
-                for (int j = AltoAux-2+i; j <= i; j--)
+                for (int j = AltoAux - 2 + i; j >= i; j--)
                 {
-                    DCircularMatriz[AnchoAux-1+i, j] = TextoEncripcion[PosicionTexto];
+                    DCircularMatriz[AnchoAux - 1 + i, j] = TextoEncripcion[PosicionTexto];
                     PosicionTexto++;
                 }
-                for (int j = AnchoAux-2+i; j <i; j++)
+                for (int j = AnchoAux - 2 + i; j > i; j--)
                 {
-                    DCircularMatriz[j,i] = TextoEncripcion[PosicionTexto];
+                    DCircularMatriz[j, i] = TextoEncripcion[PosicionTexto];
                     PosicionTexto++;
                 }
                 AnchoAux = AnchoAux - 2;
                 AltoAux = AltoAux - 2;
             }
-
+            if (AnchoAux == 1)
+            {
+                for (int i = CantidadIteraciones; i < AltoAux + CantidadIteraciones; i++)
+                {
+                    DCircularMatriz[CantidadIteraciones, i] = TextoEncripcion[PosicionTexto];
+                    PosicionTexto++;
+                }
+                AnchoAux = 0;
+                AltoAux = 0;
+            }
+            else if (AltoAux == 1)
+            {
+                for (int i = CantidadIteraciones; i < AnchoAux + CantidadIteraciones; i++)
+                {
+                    DCircularMatriz[i, CantidadIteraciones] = TextoEncripcion[PosicionTexto];
+                    PosicionTexto++;
+                }
+                AnchoAux = 0;
+                AltoAux = 0;
+            }
 
             return null;
         }
