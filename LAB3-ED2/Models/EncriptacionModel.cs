@@ -213,7 +213,7 @@ namespace LAB3_ED2.Models
             {
                 TextoCryptedEspiral += matriz[i,FinPosY];
             }
-            for (j = FinPosY -1; j >= FinPosY; j--)
+            for (j = FinPosY -1; j >= InicioPosY; j--)
             {
                 TextoCryptedEspiral += matriz[InicioPosX,j];
             }
