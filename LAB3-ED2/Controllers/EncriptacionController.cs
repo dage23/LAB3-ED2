@@ -66,6 +66,9 @@ namespace LAB3_ED2.Controllers
         [HttpPost]
         public ActionResult CifradoCesar(HttpPostedFileBase ArchivoImportado, string clave, string Opcion)
         {
+            var DiccionarioCifrado = new Dictionary<char, char>();
+            var Cesar = new EncriptacionModel();
+            DiccionarioCifrado = Cesar.DiccionarioCesar(clave, //OpcionDeCifrado);
             return View();
         }
 

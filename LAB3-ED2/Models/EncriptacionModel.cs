@@ -124,5 +124,43 @@ namespace LAB3_ED2.Models
             }
             return TextoDescifrado;
         }
+        public Dictionary<char, char> DiccionarioCesar(string clave/*, bool Opcion*/)
+        {
+            var DiccionarioCifrado = new Dictionary<char, char>();
+            var Clave = clave.ToCharArray();
+            var ContadorAbecedario = 65; //Empieza en 'A' (65) y termina en 'z' (122) sin el rango [91-96]            
+            foreach (var item in Clave)
+            {
+                if (!(ContadorAbecedario >= 91 && ContadorAbecedario <= 96))
+                {
+                    if (!DiccionarioCifrado.ContainsValue(item))
+                    {
+                        DiccionarioCifrado.Add(Convert.ToChar(ContadorAbecedario), item);
+                        ContadorAbecedario++;
+                    }
+                }
+            }
+            for (int i = 65; i < 123; i++)
+            {
+                if (!(ContadorAbecedario >= 91 && ContadorAbecedario <= 96))
+                {
+                    if (!DiccionarioCifrado.ContainsValue(Convert.ToChar(i)) && !(i >= 91 && i <= 96))
+                    {
+                        DiccionarioCifrado.Add(Convert.ToChar(ContadorAbecedario), Convert.ToChar(i));
+                        ContadorAbecedario++;
+                    }
+                }
+                else
+                {
+                    i--;
+                    ContadorAbecedario++;
+                }
+            }
+            //if (!Opcion)
+            //{
+            //    DiccionarioCifrado = DiccionarioCifrado.ToDictionary(kp => kp.Value, kp => kp.Key);
+            //}
+            return DiccionarioCifrado;
+        }
     }
 }
