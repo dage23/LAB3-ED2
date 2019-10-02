@@ -7,6 +7,7 @@ namespace LAB3_ED2.Models
 {
     public class EncriptacionModel
     {
+        string TextoCryptedEspiral = "";
         public string EncryptionZigZag(string TextoOriginal, int CantidadNiveles)
         {
             //Se crea un matriz vacia y se rellena con ~
@@ -162,36 +163,65 @@ namespace LAB3_ED2.Models
             }
             return DiccionarioCifrado;
         }
-        public string EncryptionSpiral(string TextoOriginal,int Ancho)
+        public string EncryptionSpiral(string TextoOriginal, int Ancho)
         {
-            var DivisionAncho=Math.Ceiling(Convert.ToDecimal(TextoOriginal.Length)/Convert.ToDecimal(Ancho));
+            var DivisionAncho = Math.Ceiling(Convert.ToDecimal(TextoOriginal.Length) / Convert.ToDecimal(Ancho));
             var Altura = Convert.ToInt32(DivisionAncho);
-            var Matriz=new char[Ancho,Altura];
-            for(int i=0;i<Ancho;i++)
+            var Matriz = new char[Ancho, Altura];
+            for (int i = 0; i < Ancho; i++)
             {
-                for(int j=0;j<Altura;j++)
+                for (int j = 0; j < Altura; j++)
                 {
-                    Matriz[i,j]='@';
+                    Matriz[i, j] = '@';
                 }
             }
-            var Fila =0;var Columna=0;
-            for(int i=0;i<TextoOriginal.Length;i++)
+            var Fila = 0; var Columna = 0;
+            for (int i = 0; i < TextoOriginal.Length; i++)
             {
                 if (Fila == Ancho)
                 {
                     Columna++;
                     Fila = 0;
                 }
-                //if (Columna==Altura)
-                //{
-                //    break;
-                //}
-                Matriz[Fila,Columna]=TextoOriginal[i];
+                Matriz[Fila, Columna] = TextoOriginal[i];
                 Fila++;
             }
-             return null; 
+            CapaSuperior(Matriz, 0, 0, Ancho - 1, Altura - 1);          
+            return TextoCryptedEspiral;
         }
         public string DecryptionSpiral(string TextoEncripcion, int Ancho) { return null; }
-            
+        void CapaSuperior(char[,] matriz, int InicioPosX, int InicioPosY,int FinPosX, int FinPosY)
+        {
+            var i = 0;var j = 0;
+            for (i = InicioPosX; i <= FinPosX; i++)
+            {
+                TextoCryptedEspiral += matriz[i,InicioPosY];
+            }
+            for (j = InicioPosY+1; j <= FinPosY; j++)
+            {
+                TextoCryptedEspiral += matriz[FinPosX,j];
+            }
+            if (FinPosX-InicioPosX>0)
+            {
+                CapaInferior(matriz, InicioPosX, InicioPosY+1, FinPosX - 1, FinPosY);
+            }
+        }
+        void CapaInferior(char[,] matriz, int InicioPosX, int InicioPosY, int FinPosX, int FinPosY)
+        {
+            var i = 0; var j = 0;
+            for (i = FinPosX; i >= InicioPosX; i--)
+            {
+                TextoCryptedEspiral += matriz[i,FinPosY];
+            }
+            for (j = FinPosY -1; j >= FinPosY; j--)
+            {
+                TextoCryptedEspiral += matriz[InicioPosX,j];
+            }
+            if (FinPosX - InicioPosX > 0)
+            {
+                CapaSuperior(matriz, InicioPosX+1, InicioPosY, FinPosX, FinPosY-1);
+            }
+        }
     }
+    
 }
