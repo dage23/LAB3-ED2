@@ -67,7 +67,12 @@ namespace LAB3_ED2.Controllers
         [HttpPost]
         public ActionResult CifradoCesar(HttpPostedFileBase ArchivoImportado, string clave, string Opcion)
         {
-            var ExtensionNuevoArchivo = ".cif";
+            var OpcionDeCifrado = true;
+            if (Opcion == "Descifrar")
+            {
+                OpcionDeCifrado = false;
+            }
+            var ExtensionNuevoArchivo = string.Empty;
             var NombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
             var ExtensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
             if (ArchivoImportado != null)
@@ -75,32 +80,48 @@ namespace LAB3_ED2.Controllers
 
                 var DiccionarioCifrado = new Dictionary<char, char>();
                 var Cesar = new EncriptacionModel();
-                DiccionarioCifrado = Cesar.DiccionarioCesar(clave/*, OpcionDeCifrado*/);
-                using (var Lectura = new BinaryReader(ArchivoImportado.InputStream))
+                DiccionarioCifrado = Cesar.DiccionarioCesar(clave, OpcionDeCifrado);
+
+                if (!OpcionDeCifrado && ExtensionArchivo == ".cif")
                 {
-                    using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
+                    ExtensionNuevoArchivo = ".txt";
+                }
+                if (OpcionDeCifrado && ExtensionArchivo == ".txt")
+                {
+                    ExtensionNuevoArchivo = ".cif";
+                }
+                if (ExtensionNuevoArchivo != null)
+                {
+                    using (var Lectura = new BinaryReader(ArchivoImportado.InputStream))
                     {
-                        using (var writer = new BinaryWriter(writeStream))
+                        using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
                         {
-                            var byteBuffer = new byte[bufferLength];
-                            while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
+                            using (var writer = new BinaryWriter(writeStream))
                             {
-                                byteBuffer = Lectura.ReadBytes(bufferLength);
-                                foreach (var item in byteBuffer)
+                                var byteBuffer = new byte[bufferLength];
+                                while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
                                 {
-                                    if (DiccionarioCifrado.ContainsKey(Convert.ToChar(item)))
+                                    byteBuffer = Lectura.ReadBytes(bufferLength);
+                                    foreach (var item in byteBuffer)
                                     {
-                                        var ByteEscrito = DiccionarioCifrado[Convert.ToChar(item)];
-                                        writer.Write(ByteEscrito);
-                                    }
-                                    else
-                                    {
-                                        writer.Write(item);
+                                        if (DiccionarioCifrado.ContainsKey(Convert.ToChar(item)))
+                                        {
+                                            var ByteEscrito = DiccionarioCifrado[Convert.ToChar(item)];
+                                            writer.Write(ByteEscrito);
+                                        }
+                                        else
+                                        {
+                                            writer.Write(item);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                }
+                else
+                {
+                    //Danger("El archivo tiene un formato erroneo.", true);
                 }
 
             }

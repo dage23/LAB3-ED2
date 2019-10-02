@@ -124,7 +124,7 @@ namespace LAB3_ED2.Models
             }
             return TextoDescifrado;
         }
-        public Dictionary<char, char> DiccionarioCesar(string clave/*, bool Opcion*/)
+        public Dictionary<char, char> DiccionarioCesar(string clave, bool Opcion)
         {
             var DiccionarioCifrado = new Dictionary<char, char>();
             var Clave = clave.ToCharArray();
@@ -156,7 +156,10 @@ namespace LAB3_ED2.Models
                     ContadorAbecedario++;
                 }
             }
-            
+            if (!Opcion)
+            {
+                DiccionarioCifrado = DiccionarioCifrado.ToDictionary(kp => kp.Value, kp => kp.Key);
+            }
             return DiccionarioCifrado;
         }
     }
