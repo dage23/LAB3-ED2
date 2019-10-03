@@ -142,13 +142,14 @@ namespace LAB3_ED2.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult CifradoEspiral(HttpPostedFileBase ArchivoImportado, int Ancho, string Opcion)
+        public ActionResult CifradoEspiral(HttpPostedFileBase ArchivoImportado, int Ancho, string Opcion, string Direccion)
         {
             var OpcionDeCifrado = true;
             if (Opcion == "Descifrar")
             {
                 OpcionDeCifrado = false;
             }
+
             Directory.CreateDirectory(Server.MapPath(@"~/App_Data/"));
             var ExtensionNuevoArchivo = string.Empty;
             var NombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
@@ -165,12 +166,20 @@ namespace LAB3_ED2.Controllers
                 }
                 if (ExtensionNuevoArchivo != null)
                 {
+                    var TextoCifrado = string.Empty;
                     using (var Lectura = new StreamReader(ArchivoImportado.InputStream))
                     {
                         var TextoArchivo = Lectura.ReadToEnd();
                         if (ExtensionArchivo == ".txt")
                         {
-                            var TextoCifrado = new EncriptacionModel().EncryptionSpiral(TextoArchivo, Ancho);
+                            if (Direccion == "Derecha")
+                            {
+                                TextoCifrado = new EncriptacionModel().EspiralDerecha(Ancho, OpcionDeCifrado, TextoArchivo);
+                            }
+                            else
+                            {
+                                TextoCifrado = new EncriptacionModel().EspiralAbajo(Ancho, OpcionDeCifrado, TextoArchivo);
+                            }
                             using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
                             {
                                 using (var writer = new StreamWriter(writeStream))
@@ -181,7 +190,14 @@ namespace LAB3_ED2.Controllers
                         }
                         else
                         {
-                            var TextoCifrado = new EncriptacionModel().DecryptionSpiral(TextoArchivo, Ancho);
+                            if (Direccion == "Derecha")
+                            {
+                                TextoCifrado = new EncriptacionModel().EspiralDerecha(Ancho, OpcionDeCifrado, TextoArchivo);
+                            }
+                            else
+                            {
+                                TextoCifrado = new EncriptacionModel().EspiralAbajo(Ancho, OpcionDeCifrado, TextoArchivo);
+                            }
                             using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
                             {
                                 using (var writer = new StreamWriter(writeStream))
