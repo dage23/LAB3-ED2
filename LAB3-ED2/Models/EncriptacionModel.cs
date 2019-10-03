@@ -7,16 +7,15 @@ namespace LAB3_ED2.Models
 {
     public class EncriptacionModel
     {
-        string TextoCryptedEspiral = "";
-        public string EncryptionZigZag(string TextoOriginal, int CantidadNiveles)
+        public static byte[] EncryptionZigZag(byte[] TextoOriginal, int CantidadNiveles)
         {
             //Se crea un matriz vacia y se rellena con ~
-            var MatrizCifrado = new char[CantidadNiveles, TextoOriginal.Length];
+            var MatrizCifrado = new byte[CantidadNiveles, TextoOriginal.Length];
             for (int i = 0; i < CantidadNiveles; i++)
             {
                 for (int j = 0; j < TextoOriginal.Length; j++)
                 {
-                    MatrizCifrado[i, j] = '~';
+                    MatrizCifrado[i, j] = 0;
                 }
             }
             //Se hace el recorrido estilo zig zag
@@ -38,28 +37,30 @@ namespace LAB3_ED2.Models
                 }
             }
             //Se crea el string encriptado
-            var TextoEncriptado = string.Empty;
+            var TextoEncriptado = new byte[TextoOriginal.Length];
+            var h = 0;
             for (int i = 0; i < CantidadNiveles; i++)
             {
                 for (int j = 0; j < TextoOriginal.Length; j++)
                 {
-                    if (MatrizCifrado[i, j] != '~')
+                    if (MatrizCifrado[i, j] != 0)
                     {
-                        TextoEncriptado += MatrizCifrado[i, j];
+                        TextoEncriptado[h] = MatrizCifrado[i, j];
+                        h++;
                     }
                 }
             }
             return TextoEncriptado;
         }
-        public string DecryptZZ(string TextoEncriptado, int CantidadNiveles)
+        public static byte[] DecryptZZ(byte[] TextoEncriptado, int CantidadNiveles)
         {
             //Creacion y llenado de matriz
-            var MatrizCifrada = new char[CantidadNiveles, TextoEncriptado.Length];
+            var MatrizCifrada = new byte[CantidadNiveles, TextoEncriptado.Length];
             for (int i = 0; i < CantidadNiveles; i++)
             {
                 for (int j = 0; j < TextoEncriptado.Length; j++)
                 {
-                    MatrizCifrada[i, j] = '~';
+                    MatrizCifrada[i, j] = 0;
                 }
             }
             //Hacer el recorrido en zig zag
@@ -75,7 +76,7 @@ namespace LAB3_ED2.Models
                 {
                     HaciaAbajo = false;
                 }
-                MatrizCifrada[Fila, Columna++] = '$';
+                MatrizCifrada[Fila, Columna++] = 1;
                 if (HaciaAbajo)
                 {
                     Fila++;
@@ -91,14 +92,15 @@ namespace LAB3_ED2.Models
             {
                 for (int j = 0; j < TextoEncriptado.Length; j++)
                 {
-                    if (MatrizCifrada[i, j] == '$' && PosicionActual < TextoEncriptado.Length)
+                    if (MatrizCifrada[i, j] == 1 && PosicionActual < TextoEncriptado.Length)
                     {
                         MatrizCifrada[i, j] = TextoEncriptado[PosicionActual++];
                     }
                 }
             }
             //Desencriptar el texto
-            var TextoDescifrado = string.Empty;
+            var TextoDescifrado = new byte[TextoEncriptado.Length];
+            var h = 0;
             Fila = 0; Columna = 0;
             for (int i = 0; i < TextoEncriptado.Length; i++)
             {
@@ -110,9 +112,10 @@ namespace LAB3_ED2.Models
                 {
                     HaciaAbajo = false;
                 }
-                if (MatrizCifrada[Fila, Columna] != '$')
+                if (MatrizCifrada[Fila, Columna] != 1)
                 {
-                    TextoDescifrado += (MatrizCifrada[Fila, Columna++]);
+                    TextoDescifrado[h] = (MatrizCifrada[Fila, Columna++]);
+                    h++;
                 }
                 if (HaciaAbajo)
                 {
@@ -163,9 +166,6 @@ namespace LAB3_ED2.Models
             }
             return DiccionarioCifrado;
         }
-
-
-       
         public string EspiralAbajo(int Ancho, bool Cifrado, string TextoEncripcion)
         {
             var DivisionAncho = Math.Ceiling(Convert.ToDecimal(TextoEncripcion.Length) / Convert.ToDecimal(Ancho));
@@ -261,8 +261,7 @@ namespace LAB3_ED2.Models
             }
             return REGRESA;
         }
-
-        public string EspiralDerecha(int Ancho,  bool Cifrado, string TextoEncripcion)
+        public string EspiralDerecha(int Ancho, bool Cifrado, string TextoEncripcion)
         {
             var DivisionAncho = Math.Ceiling(Convert.ToDecimal(TextoEncripcion.Length) / Convert.ToDecimal(Ancho));
             var Altura = Convert.ToInt32(DivisionAncho);
@@ -357,8 +356,6 @@ namespace LAB3_ED2.Models
             }
             return REGRESA;
         }
-
-
     }
-    
+
 }

@@ -29,16 +29,22 @@ namespace LAB3_ED2.Controllers
             var ExtensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
             if (ArchivoImportado != null)
             {
-                using (var Lectura = new StreamReader(ArchivoImportado.InputStream))
+                using (var Lectura = new BinaryReader(ArchivoImportado.InputStream))
                 {
-                    var TextoArchivo = Lectura.ReadToEnd();
+                    var TextoArchivo = new byte[ArchivoImportado.InputStream.Length];
+                    var i = 0;
+                    while (Lectura.BaseStream.Position!=Lectura.BaseStream.Length)
+                    {
+                        TextoArchivo[i] = Lectura.ReadByte();
+                        i++;
+                    }
                     if (Opcion == "Descifrar" && ExtensionArchivo == ".cif")
                     {
                         ExtensionNuevoArchivo = ".txt";
-                        var TextoDescifrado = new EncriptacionModel().DecryptZZ(TextoArchivo, CantidadNiveles);
+                        var TextoDescifrado = EncriptacionModel.DecryptZZ(TextoArchivo, CantidadNiveles);
                         using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
                         {
-                            using (var writer = new StreamWriter(writeStream))
+                            using (var writer = new BinaryWriter(writeStream))
                             {
                                 writer.Write(TextoDescifrado);
                             }
@@ -47,10 +53,10 @@ namespace LAB3_ED2.Controllers
                     if (Opcion == "Cifrar" && ExtensionArchivo == ".txt")
                     {
                         ExtensionNuevoArchivo = ".cif";
-                        var TextoCifrado = new EncriptacionModel().EncryptionZigZag(TextoArchivo, CantidadNiveles);
+                        var TextoCifrado = EncriptacionModel.EncryptionZigZag(TextoArchivo, CantidadNiveles);
                         using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
                         {
-                            using (var writer = new StreamWriter(writeStream))
+                            using (var writer = new BinaryWriter(writeStream))
                             {
                                 writer.Write(TextoCifrado);
                             }
@@ -134,9 +140,6 @@ namespace LAB3_ED2.Controllers
             var FileVirtualPath = @"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo;
             return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
         }
-
-
-
         public ActionResult CifradoEspiral()
         {
             return View();
@@ -213,6 +216,6 @@ namespace LAB3_ED2.Controllers
             var FileVirtualPath = @"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo;
             return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
         }
-        
+
     }
 }
