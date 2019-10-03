@@ -142,26 +142,52 @@ namespace LAB3_ED2.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult CifradoEspiral(HttpPostedFileBase ArchivoImportado, int Ancho)
+        public ActionResult CifradoEspiral(HttpPostedFileBase ArchivoImportado, int Ancho, string Opcion)
         {
+            var OpcionDeCifrado = true;
+            if (Opcion == "Descifrar")
+            {
+                OpcionDeCifrado = false;
+            }
             Directory.CreateDirectory(Server.MapPath(@"~/App_Data/"));
             var ExtensionNuevoArchivo = string.Empty;
             var NombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
             var ExtensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
             if (ArchivoImportado != null)
             {
-                using (var Lectura = new StreamReader(ArchivoImportado.InputStream))
+                if (!OpcionDeCifrado && ExtensionArchivo == ".cif")
                 {
-                    var TextoArchivo = Lectura.ReadToEnd();                   
-                    if (ExtensionArchivo == ".txt")
+                    ExtensionNuevoArchivo = ".txt";
+                }
+                if (OpcionDeCifrado && ExtensionArchivo == ".txt")
+                {
+                    ExtensionNuevoArchivo = ".cif";
+                }
+                if (ExtensionNuevoArchivo != null)
+                {
+                    using (var Lectura = new StreamReader(ArchivoImportado.InputStream))
                     {
-                        ExtensionNuevoArchivo = ".cif";
-                        var TextoCifrado = new EncriptacionModel().EncryptionSpiral(TextoArchivo, Ancho);
-                        using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
+                        var TextoArchivo = Lectura.ReadToEnd();
+                        if (ExtensionArchivo == ".txt")
                         {
-                            using (var writer = new StreamWriter(writeStream))
+                            var TextoCifrado = new EncriptacionModel().EncryptionSpiral(TextoArchivo, Ancho);
+                            using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
                             {
-                                writer.Write(TextoCifrado);
+                                using (var writer = new StreamWriter(writeStream))
+                                {
+                                    writer.Write(TextoCifrado);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            var TextoCifrado = new EncriptacionModel().DecryptionSpiral(TextoArchivo, Ancho);
+                            using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
+                            {
+                                using (var writer = new StreamWriter(writeStream))
+                                {
+                                    writer.Write(TextoCifrado);
+                                }
                             }
                         }
                     }
@@ -171,34 +197,6 @@ namespace LAB3_ED2.Controllers
             var FileVirtualPath = @"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo;
             return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
         }
-        public ActionResult DescifradoEspiral() { return View(); }
-        [HttpPost]
-        public ActionResult DescifradoEspiral(HttpPostedFileBase ArchivoImportado, int Altura)
-        {
-            Directory.CreateDirectory(Server.MapPath(@"~/App_Data/"));
-            var ExtensionNuevoArchivo = string.Empty;
-            var NombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
-            var ExtensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
-            if (ArchivoImportado != null)
-            {
-                using (var Lectura = new StreamReader(ArchivoImportado.InputStream))
-                {
-                    var TextoArchivo = Lectura.ReadToEnd();
-                    if (ExtensionArchivo == ".cif")
-                    {
-                        ExtensionNuevoArchivo = ".txt";
-                        var TextoDescifrado = new EncriptacionModel().DecryptionSpiral(TextoArchivo, Altura);
-                        using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
-                        {
-                            using (var writer = new StreamWriter(writeStream))
-                            {
-                                writer.Write(TextoDescifrado);
-                            }
-                        }
-                    }
-                }
-            }
-            return View();
-        }
+        
     }
 }

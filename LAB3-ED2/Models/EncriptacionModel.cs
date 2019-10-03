@@ -165,38 +165,50 @@ namespace LAB3_ED2.Models
         }
 
 
-        public string EncryptionSpiral(string TextoOriginal, int Ancho)
-        {
-            var DivisionAncho = Math.Ceiling(Convert.ToDecimal(TextoOriginal.Length) / Convert.ToDecimal(Ancho));
-            var Altura = Convert.ToInt32(DivisionAncho);
-            var Matriz = new char[Ancho, Altura];
-            for (int i = 0; i < Ancho; i++)
-            {
-                for (int j = 0; j < Altura; j++)
-                {
-                    Matriz[i, j] = '@';
-                }
-            }
-            var Fila = 0; var Columna = 0;
-            for (int i = 0; i < TextoOriginal.Length; i++)
-            {
-                if (Fila == Ancho)
-                {
-                    Columna++;
-                    Fila = 0;
-                }
-                Matriz[Fila, Columna] = TextoOriginal[i];
-                Fila++;
-            }
-            CapaSuperior(Matriz, 0, 0, Ancho - 1, Altura - 1);          
-            return TextoCryptedEspiral;
-        }
-        
-        public string DecryptionSpiral(string TextoEncripcion, int Ancho)
+       
+        public string EspiralAbajo(int Ancho, bool Cifrado, string TextoEncripcion)
         {
             var DivisionAncho = Math.Ceiling(Convert.ToDecimal(TextoEncripcion.Length) / Convert.ToDecimal(Ancho));
             var Altura = Convert.ToInt32(DivisionAncho);
             var DCircularMatriz = new char[Ancho, Altura];
+            var PosicionTexto = 0;
+            if (Cifrado)
+            {
+                for (int i = 0; i < Altura; i++)
+                {
+                    for (int j = 0; j < Ancho; j++)
+                    {
+                        if (PosicionTexto < TextoEncripcion.Length)
+                        {
+                            DCircularMatriz[j, i] = TextoEncripcion[PosicionTexto];
+                            PosicionTexto++;
+                        }
+                        else
+                        {
+                            DCircularMatriz[j, i] = ' ';
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < Ancho; i++)
+                {
+                    for (int j = 0; j < Altura; j++)
+                    {
+                        if (PosicionTexto < TextoEncripcion.Length)
+                        {
+                            DCircularMatriz[i, j] = TextoEncripcion[PosicionTexto];
+                            PosicionTexto++;
+                        }
+                        else
+                        {
+                            DCircularMatriz[j, i] = ' ';
+                        }
+                    }
+                }
+            }
+            var REGRESA = string.Empty;
             var CantidadIteraciones = 0;
             if (Ancho < Altura)
             {
@@ -206,38 +218,25 @@ namespace LAB3_ED2.Models
             {
                 CantidadIteraciones = Altura / 2;
             }
-            if (TextoEncripcion.Length < (Ancho * Altura))
-            {
-                var Longitud = TextoEncripcion.Length;
-                for (int i = Longitud; i < (Ancho * Altura); i++)
-                {
-                    TextoEncripcion = TextoEncripcion + " ";
-                }
-            }
-            var PosicionTexto = 0;
             var AnchoAux = Ancho;
             var AltoAux = Altura;
             for (int i = 0; i < CantidadIteraciones; i++)
             {
                 for (int j = i; j < AltoAux + i; j++)
                 {
-                    DCircularMatriz[i, j] = TextoEncripcion[PosicionTexto];
-                    PosicionTexto++;
+                    REGRESA = REGRESA + DCircularMatriz[i, j];
                 }
                 for (int j = i + 1; j < AnchoAux + i; j++)
                 {
-                    DCircularMatriz[j, AltoAux - 1 + i] = TextoEncripcion[PosicionTexto];
-                    PosicionTexto++;
+                    REGRESA = REGRESA + DCircularMatriz[j, AltoAux - 1 + i];
                 }
                 for (int j = AltoAux - 2 + i; j >= i; j--)
                 {
-                    DCircularMatriz[AnchoAux - 1 + i, j] = TextoEncripcion[PosicionTexto];
-                    PosicionTexto++;
+                    REGRESA = REGRESA + DCircularMatriz[AnchoAux - 1 + i, j];
                 }
                 for (int j = AnchoAux - 2 + i; j > i; j--)
                 {
-                    DCircularMatriz[j, i] = TextoEncripcion[PosicionTexto];
-                    PosicionTexto++;
+                    REGRESA = REGRESA + DCircularMatriz[j, i];
                 }
                 AnchoAux = AnchoAux - 2;
                 AltoAux = AltoAux - 2;
@@ -246,66 +245,120 @@ namespace LAB3_ED2.Models
             {
                 for (int i = CantidadIteraciones; i < AltoAux + CantidadIteraciones; i++)
                 {
-                    DCircularMatriz[CantidadIteraciones, i] = TextoEncripcion[PosicionTexto];
-                    PosicionTexto++;
+                    REGRESA = REGRESA + DCircularMatriz[CantidadIteraciones, i];
                 }
                 AnchoAux = 0;
                 AltoAux = 0;
             }
-            if (AltoAux == 1)
+            else if (AltoAux == 1)
             {
                 for (int i = CantidadIteraciones; i < AnchoAux + CantidadIteraciones; i++)
                 {
-                    DCircularMatriz[i, CantidadIteraciones] = TextoEncripcion[PosicionTexto];
-                    PosicionTexto++;
+                    REGRESA = REGRESA + DCircularMatriz[i, CantidadIteraciones];
                 }
                 AnchoAux = 0;
                 AltoAux = 0;
             }
-            var TextoDescifrado = string.Empty;
-            for (int i = 0; i < Altura; i++)
+            return REGRESA;
+        }
+
+        public string EspiralDerecha(int Ancho,  bool Cifrado, string TextoEncripcion)
+        {
+            var DivisionAncho = Math.Ceiling(Convert.ToDecimal(TextoEncripcion.Length) / Convert.ToDecimal(Ancho));
+            var Altura = Convert.ToInt32(DivisionAncho);
+            var DCircularMatriz = new char[Ancho, Altura];
+            var PosicionTexto = 0;
+            if (Cifrado)
             {
-                for (int j = 0; j < Ancho; j++)
+                for (int i = 0; i < Altura; i++)
                 {
-                    TextoDescifrado = TextoDescifrado + DCircularMatriz[j, i];
+                    for (int j = 0; j < Ancho; j++)
+                    {
+                        if (PosicionTexto < TextoEncripcion.Length)
+                        {
+                            DCircularMatriz[j, i] = TextoEncripcion[PosicionTexto];
+                            PosicionTexto++;
+                        }
+                        else
+                        {
+                            DCircularMatriz[j, i] = ' ';
+                        }
+                    }
                 }
             }
-            return TextoDescifrado;
+            else
+            {
+                for (int i = 0; i < Ancho; i++)
+                {
+                    for (int j = 0; j < Altura; j++)
+                    {
+                        if (PosicionTexto < TextoEncripcion.Length)
+                        {
+                            DCircularMatriz[i, j] = TextoEncripcion[PosicionTexto];
+                            PosicionTexto++;
+                        }
+                        else
+                        {
+                            DCircularMatriz[j, i] = ' ';
+                        }
+                    }
+                }
+            }
+            var REGRESA = string.Empty;
+            var CantidadIteraciones = 0;
+            if (Ancho < Altura)
+            {
+                CantidadIteraciones = Ancho / 2;
+            }
+            else
+            {
+                CantidadIteraciones = Altura / 2;
+            }
+            var AnchoAux = Ancho;
+            var AltoAux = Altura;
+            for (int i = 0; i < CantidadIteraciones; i++)
+            {
+                for (int j = i; j < AnchoAux + i; j++)
+                {
+                    REGRESA = REGRESA + DCircularMatriz[j, i];
+                }
+                for (int j = i + 1; j < AltoAux + i; j++)
+                {
+                    REGRESA = REGRESA + DCircularMatriz[AnchoAux - 1 + i, j];
+                }
+                for (int j = AnchoAux - 2 + i; j >= i; j--)
+                {
+                    REGRESA = REGRESA + DCircularMatriz[j, AltoAux - 1 + i];
+                }
+                for (int j = AltoAux - 2 + i; j > i; j--)
+                {
+                    REGRESA = REGRESA + DCircularMatriz[i, j];
+                }
+                AnchoAux = AnchoAux - 2;
+                AltoAux = AltoAux - 2;
+            }
+            if (AnchoAux == 1)
+            {
+                for (int i = CantidadIteraciones; i < AltoAux + CantidadIteraciones; i++)
+                {
+                    REGRESA = REGRESA + DCircularMatriz[CantidadIteraciones, i];
+                }
+                AnchoAux = 0;
+                AltoAux = 0;
+            }
+            else if (AltoAux == 1)
+            {
+                for (int i = CantidadIteraciones; i < AnchoAux + CantidadIteraciones; i++)
+                {
+                    REGRESA = REGRESA + DCircularMatriz[i, CantidadIteraciones];
+                }
+                AnchoAux = 0;
+                AltoAux = 0;
+            }
+            return REGRESA;
         }
-        
 
-        void CapaSuperior(char[,] matriz, int InicioPosX, int InicioPosY,int FinPosX, int FinPosY)
-        {
-            var i = 0;var j = 0;
-            for (i = InicioPosX; i <= FinPosX; i++)
-            {
-                TextoCryptedEspiral += matriz[i,InicioPosY];
-            }
-            for (j = InicioPosY+1; j <= FinPosY; j++)
-            {
-                TextoCryptedEspiral += matriz[FinPosX,j];
-            }
-            if (FinPosX-InicioPosX>0)
-            {
-                CapaInferior(matriz, InicioPosX, InicioPosY+1, FinPosX - 1, FinPosY);
-            }
-        }
-        void CapaInferior(char[,] matriz, int InicioPosX, int InicioPosY, int FinPosX, int FinPosY)
-        {
-            var i = 0; var j = 0;
-            for (i = FinPosX; i >= InicioPosX; i--)
-            {
-                TextoCryptedEspiral += matriz[i,FinPosY];
-            }
-            for (j = FinPosY -1; j >= InicioPosY; j--)
-            {
-                TextoCryptedEspiral += matriz[InicioPosX,j];
-            }
-            if (FinPosX - InicioPosX > 0)
-            {
-                CapaSuperior(matriz, InicioPosX+1, InicioPosY, FinPosX, FinPosY-1);
-            }
-        }
+
     }
     
 }
