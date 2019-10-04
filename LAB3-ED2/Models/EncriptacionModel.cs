@@ -296,7 +296,7 @@ namespace LAB3_ED2.Models
                     TextoEncripcion = TextoEncripcion + ' ';
                 }
             }
-            if (!Abajo)
+            if (Abajo)
             {
                 for (int i = 0; i < CantidadIteraciones; i++)
                 {
@@ -394,11 +394,11 @@ namespace LAB3_ED2.Models
             }
 
             string REGRESA = "";
-            for (int i = 0; i < Ancho; i++)
+            for (int i = 0; i < Altura; i++)
             {
-                for (int j = 0; j < Altura; j++)
+                for (int j = 0; j < Ancho; j++)
                 {
-                    REGRESA = REGRESA + DCircularMatriz[i, j];
+                    REGRESA = REGRESA + DCircularMatriz[j, i];
                 }
             }
             return REGRESA;

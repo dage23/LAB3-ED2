@@ -147,67 +147,52 @@ namespace LAB3_ED2.Controllers
         [HttpPost]
         public ActionResult CifradoEspiral(HttpPostedFileBase ArchivoImportado, int Ancho, string Opcion, string Direccion)
         {
-            var OpcionDeCifrado = true;
+            var opcionDeCifrado = true;
             if (Opcion == "Descifrar")
             {
-                OpcionDeCifrado = false;
+                opcionDeCifrado = false;
             }
-
+            var direccion = true;
+            if (Direccion!="Abajo")
+            {
+                direccion = false;
+            }
             Directory.CreateDirectory(Server.MapPath(@"~/App_Data/"));
             var ExtensionNuevoArchivo = string.Empty;
             var NombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
             var ExtensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
             if (ArchivoImportado != null)
             {
-                if (!OpcionDeCifrado && ExtensionArchivo == ".cif")
+                if (!opcionDeCifrado && ExtensionArchivo == ".cif")
                 {
                     ExtensionNuevoArchivo = ".txt";
                 }
-                if (OpcionDeCifrado && ExtensionArchivo == ".txt")
+                if (opcionDeCifrado && ExtensionArchivo == ".txt")
                 {
                     ExtensionNuevoArchivo = ".cif";
                 }
                 if (ExtensionNuevoArchivo != null)
                 {
                     var TextoCifrado = string.Empty;
+                    var TextoArchivo = string.Empty;
                     using (var Lectura = new StreamReader(ArchivoImportado.InputStream))
                     {
-                        var TextoArchivo = Lectura.ReadToEnd();
-                        if (ExtensionArchivo == ".txt")
+                        TextoArchivo = Lectura.ReadToEnd();
+                    }
+                    var Espiral = new EncriptacionModel();
+                    if (opcionDeCifrado)
+                    {
+                        TextoCifrado = Espiral.CifradoEspiral(Ancho, direccion, TextoArchivo);
+                    }
+                    else
+                    {
+                        TextoCifrado = Espiral.DescifradoEspiral(Ancho, direccion, TextoArchivo);
+                    }
+                    using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
+                    {
+                        using (var writer = new StreamWriter(writeStream))
                         {
-                            if (Direccion == "Derecha")
-                            {
-                                TextoCifrado = new EncriptacionModel().EspiralDerecha(Ancho, OpcionDeCifrado, TextoArchivo);
-                            }
-                            else
-                            {
-                                TextoCifrado = new EncriptacionModel().EspiralAbajo(Ancho, OpcionDeCifrado, TextoArchivo);
-                            }
-                            using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
-                            {
-                                using (var writer = new StreamWriter(writeStream))
-                                {
-                                    writer.Write(TextoCifrado);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (Direccion == "Derecha")
-                            {
-                                TextoCifrado = new EncriptacionModel().EspiralDerecha(Ancho, OpcionDeCifrado, TextoArchivo);
-                            }
-                            else
-                            {
-                                TextoCifrado = new EncriptacionModel().EspiralAbajo(Ancho, OpcionDeCifrado, TextoArchivo);
-                            }
-                            using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + NombreArchivo + ExtensionNuevoArchivo), FileMode.OpenOrCreate))
-                            {
-                                using (var writer = new StreamWriter(writeStream))
-                                {
-                                    writer.Write(TextoCifrado);
-                                }
-                            }
+                            writer.Write(TextoCifrado);
                         }
                     }
                 }
