@@ -186,12 +186,13 @@ namespace LAB3_ED2.Controllers
                     {
                         var auxTextoCifrado = EncriptacionModel.CifradoEspiral(Ancho, direccion, textoArchivo);
                         textoResultante = new byte[auxTextoCifrado.Length];
+                        textoResultante = auxTextoCifrado;
                     }
                     else
                     {
                         var auxTextoDescifrado = EncriptacionModel.DescifradoEspiral(Ancho, direccion, textoArchivo);
                         textoResultante = new byte[auxTextoDescifrado.Length];
-
+                        textoResultante = auxTextoDescifrado;
                     }
                     using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + nombreArchivo + extensionNuevoArchivo), FileMode.OpenOrCreate))
                     {
