@@ -16,5 +16,5 @@ Direccion=En contra de las agujas del reloj
 -Ejemplo Descifrado
 Ancho de Matriz=4
 Archivo=texto.cif
-Opcion=Desifrado
+Opcion=Descifrado
 Direccion=En contra de las agujas del reloj
