@@ -164,8 +164,6 @@
     <Content Include="Views\Encriptacion\CifradoZigZag.cshtml" />
     <Content Include="Views\Encriptacion\CifradoCesar.cshtml" />
     <Content Include="Views\Encriptacion\CifradoEspiral.cshtml" />
-    <Content Include="Views\Encriptacion\DescifradoEspiral.cshtml" />
-    <Content Include="Views\Encriptacion\MenuEspiral.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
