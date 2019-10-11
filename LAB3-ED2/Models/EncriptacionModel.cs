@@ -431,21 +431,31 @@ namespace LAB3_ED2.Models
             {
                 KeyBinario = KeyBinario.PadLeft(10,'0');
             }
-            var KeyAfterP10=PDiez(KeyBinario,DireccionArchivos);
+            var KeyAfterP10=PermutacionX(KeyBinario,DireccionArchivos,10);
             var KeyAfterLSO=LeftShiftOne(KeyAfterP10);
+            var KeyOne=PermutacionX(KeyAfterLSO,DireccionArchivos,8);
             return null;
         }
         public static byte SDES()
         {
             return 0;
         }
-
-        public static string PDiez(string OriginalKey, string DireccionArchivo)
+        public static string LeftShiftOne(string KeyAfterP10)
         {
-            var ArregloPosiciones = new int[10];
+            string Result = "";
+            for (int i = 1; i < KeyAfterP10.Length; i++)
+            {
+                Result += KeyAfterP10[i];
+            }
+            Result += KeyAfterP10[0];
+            return Result;
+        }
+        public static string PermutacionX(string OriginalKey, string DireccionArchivo, int Tipo)
+        {
+            var ArregloPosiciones = new int[Tipo];
             var ArregloNuevasPosiciones = string.Empty;
             var contador = 0;
-            using (var Archivo = new FileStream((DireccionArchivo+"P10.txt"), FileMode.OpenOrCreate))
+            using (var Archivo = new FileStream((DireccionArchivo+"P"+Tipo+".txt"), FileMode.OpenOrCreate))
             {
                 using (var Lectura = new BinaryReader(Archivo))
                 {
@@ -462,15 +472,6 @@ namespace LAB3_ED2.Models
             }
             return ArregloNuevasPosiciones;
         }
-        public static string LeftShiftOne(string KeyAfterP10)
-        {
-            string Result = "";
-            for (int i = 1; i < KeyAfterP10.Length; i++)
-            {
-                Result += KeyAfterP10[i];
-            }
-            Result += KeyAfterP10[0];
-            return Result;
-        }
+
     }    
 }
