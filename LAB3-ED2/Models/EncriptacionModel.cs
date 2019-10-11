@@ -432,7 +432,7 @@ namespace LAB3_ED2.Models
                 KeyBinario = KeyBinario.PadLeft(10,'0');
             }
             var KeyAfterP10=PDiez(KeyBinario,DireccionArchivos);
-            var KeyOne=LeftShiftOne(KeyAfterP10);
+            var KeyAfterLSO=LeftShiftOne(KeyAfterP10);
             return null;
         }
         public static byte SDES()
@@ -461,6 +461,16 @@ namespace LAB3_ED2.Models
                 ArregloNuevasPosiciones+= (OriginalKey[ArregloPosiciones[i]]);
             }
             return ArregloNuevasPosiciones;
+        }
+        public static string LeftShiftOne(string KeyAfterP10)
+        {
+            string Result = "";
+            for (int i = 1; i < KeyAfterP10.Length; i++)
+            {
+                Result += KeyAfterP10[i];
+            }
+            Result += KeyAfterP10[0];
+            return Result;
         }
     }    
 }
