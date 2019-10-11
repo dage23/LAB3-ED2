@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.IO;
@@ -10,7 +8,7 @@ namespace LAB3_ED2.Controllers
     public class EncriptacionController : Controller
     {
         const int bufferLength = 100;
-        public ActionResult Menu()
+        public ActionResult SerieI()
         {
             return View();
         }
@@ -158,6 +156,7 @@ namespace LAB3_ED2.Controllers
             var extensionNuevoArchivo = string.Empty;
             var nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
             var extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
+            var DireccionArchivos=Server.MapPath(@"~/App_Data/");
             if (ArchivoImportado != null)
             {
                 var textoArchivo = new byte[ArchivoImportado.InputStream.Length];
@@ -210,6 +209,46 @@ namespace LAB3_ED2.Controllers
             }
             var fileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionNuevoArchivo;
             return File(fileVirtualPath, "application / force - download", Path.GetFileName(fileVirtualPath));
+        }
+        public ActionResult SerieII()
+        {
+            return View();
+        }
+        
+        [HttpPost]
+        public ActionResult SerieII(HttpPostedFileBase ArchivoImportado, string clave, string Opcion)
+        {
+            var opcionDeCifrado = true;
+            if (Opcion == "Descifrar")
+            {
+                opcionDeCifrado = false;
+            }
+            var extensionNuevoArchivo = string.Empty;
+            var nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
+            var extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
+            if (ArchivoImportado != null)
+            {
+                if (!opcionDeCifrado && extensionArchivo == ".cif")
+                {
+                    extensionNuevoArchivo = ".txt";
+                }
+                if (opcionDeCifrado && extensionArchivo == ".txt")
+                {
+                    extensionNuevoArchivo = ".cif";
+                }
+                int NumeroClave = Int32.Parse(clave);
+                if (NumeroClave<0||NumeroClave>1023)
+                {
+                    throw new FormatException("La clave no cumple con el formato establecido.");
+                }
+
+            }
+            else
+            {
+                throw new FileLoadException();
+            }
+            var FileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionNuevoArchivo;
+            return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
         }
 
     }
