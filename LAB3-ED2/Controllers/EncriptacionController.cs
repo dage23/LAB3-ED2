@@ -8,7 +8,7 @@ namespace LAB3_ED2.Controllers
     public class EncriptacionController : Controller
     {
         const int bufferLength = 100;
-        public ActionResult SerieI()
+        public ActionResult Menu()
         {
             return View();
         }
@@ -210,37 +210,34 @@ namespace LAB3_ED2.Controllers
             var fileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionNuevoArchivo;
             return File(fileVirtualPath, "application / force - download", Path.GetFileName(fileVirtualPath));
         }
-        public ActionResult SerieII()
+        public ActionResult CifradoSDES()
         {
             return View();
         }
         
         [HttpPost]
-        public ActionResult SerieII(HttpPostedFileBase ArchivoImportado, string clave, string Opcion)
+        public ActionResult CifradoSDES(HttpPostedFileBase ArchivoImportado, string clave, string Opcion)
         {
-            var opcionDeCifrado = true;
-            if (Opcion == "Descifrar")
-            {
-                opcionDeCifrado = false;
-            }
             var extensionNuevoArchivo = string.Empty;
             var nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
             var extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
             var DireccionArchivos=Server.MapPath(@"~/Others/");
             if (ArchivoImportado != null)
             {
-                if (!opcionDeCifrado && extensionArchivo == ".cif")
-                {
-                    extensionNuevoArchivo = ".txt";
-                }
-                if (opcionDeCifrado && extensionArchivo == ".txt")
-                {
-                    extensionNuevoArchivo = ".cif";
-                }
                 int NumeroClave = Int32.Parse(clave);
-                if (NumeroClave<0||NumeroClave>1023)
+                if (NumeroClave < 0 || NumeroClave > 1023)
                 {
                     throw new FormatException("La clave no cumple con el formato establecido.");
+                }
+                if (Opcion=="Decifrar" && extensionArchivo == ".cif")
+                {
+                    extensionNuevoArchivo = ".txt";
+                    EncriptacionModel.ObtenerKeys(NumeroClave, DireccionArchivos);
+                }
+                if (Opcion == "Cifrar" && extensionArchivo == ".txt")
+                {
+                    extensionNuevoArchivo = ".cif";
+                    EncriptacionModel.ObtenerKeys(NumeroClave, DireccionArchivos);
                 }
 
             }
