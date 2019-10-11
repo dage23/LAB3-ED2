@@ -226,6 +226,7 @@ namespace LAB3_ED2.Controllers
             var extensionNuevoArchivo = string.Empty;
             var nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
             var extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
+            var DireccionArchivos=Server.MapPath(@"~/Others/");
             if (ArchivoImportado != null)
             {
                 if (!opcionDeCifrado && extensionArchivo == ".cif")
