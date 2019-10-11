@@ -431,7 +431,8 @@ namespace LAB3_ED2.Models
             {
                 KeyBinario = KeyBinario.PadLeft(10,'0');
             }
-            PDiez(KeyBinario,DireccionArchivos);
+            var KeyAfterP10=PDiez(KeyBinario,DireccionArchivos);
+            var KeyOne=LeftShiftOne(KeyAfterP10);
             return null;
         }
         public static byte SDES()
@@ -442,24 +443,24 @@ namespace LAB3_ED2.Models
         public static string PDiez(string OriginalKey, string DireccionArchivo)
         {
             var ArregloPosiciones = new int[10];
-            var ArregloNuevasPosiciones = new int[10];
+            var ArregloNuevasPosiciones = string.Empty;
             var contador = 0;
             using (var Archivo = new FileStream((DireccionArchivo+"P10.txt"), FileMode.OpenOrCreate))
             {
                 using (var Lectura = new BinaryReader(Archivo))
                 {
-                    while (Lectura.BaseStream.Position!=Lectura.BaseStream.Length)
+                    while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
                     {
-                        ArregloPosiciones[contador] = Convert.ToInt32(Lectura.ReadByte());
+                        ArregloPosiciones[contador] = Int32.Parse(Convert.ToString(Convert.ToChar(Lectura.ReadByte())));
                         contador++;
-                    }
+                    }                    
                 }
             }
             for (int i = 0; i < ArregloPosiciones.Length; i++)
             {
-                ArregloNuevasPosiciones[i] = OriginalKey[ArregloPosiciones[i]];
+                ArregloNuevasPosiciones+= (OriginalKey[ArregloPosiciones[i]]);
             }
-            return "";
+            return ArregloNuevasPosiciones;
         }
     }    
 }
