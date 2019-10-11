@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-
+using System.IO;
 namespace LAB3_ED2.Models
 {
     public class EncriptacionModel
@@ -424,6 +424,42 @@ namespace LAB3_ED2.Models
             }
             return REGRESA;
         }
-    }
+        public static string[] ObtenerKeys(int OriginalKey, string DireccionArchivos)
+        {
+            var GeneratedKeys = new string[2]; var KeyBinario = Convert.ToString(OriginalKey,2);
+            if (KeyBinario.Length<10)
+            {
+                KeyBinario = KeyBinario.PadLeft(10,'0');
+            }
+            PDiez(KeyBinario,DireccionArchivos);
+            return null;
+        }
+        public static byte SDES()
+        {
+            return 0;
+        }
 
+        public static string PDiez(string OriginalKey, string DireccionArchivo)
+        {
+            var ArregloPosiciones = new int[10];
+            var ArregloNuevasPosiciones = new int[10];
+            var contador = 0;
+            using (var Archivo = new FileStream((DireccionArchivo+"P10.txt"), FileMode.OpenOrCreate))
+            {
+                using (var Lectura = new BinaryReader(Archivo))
+                {
+                    while (Lectura.BaseStream.Position!=Lectura.BaseStream.Length)
+                    {
+                        ArregloPosiciones[contador] = Convert.ToInt32(Lectura.ReadByte());
+                        contador++;
+                    }
+                }
+            }
+            for (int i = 0; i < ArregloPosiciones.Length; i++)
+            {
+                ArregloNuevasPosiciones[i] = OriginalKey[ArregloPosiciones[i]];
+            }
+            return "";
+        }
+    }    
 }
