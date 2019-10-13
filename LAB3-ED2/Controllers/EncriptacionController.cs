@@ -31,7 +31,7 @@ namespace LAB3_ED2.Controllers
                 {
                     var textoArchivo = new byte[ArchivoImportado.InputStream.Length];
                     var i = 0;
-                    while (lectura.BaseStream.Position!=lectura.BaseStream.Length)
+                    while (lectura.BaseStream.Position != lectura.BaseStream.Length)
                     {
                         textoArchivo[i] = lectura.ReadByte();
                         i++;
@@ -148,7 +148,7 @@ namespace LAB3_ED2.Controllers
                 opcionDeCifrado = false;
             }
             var direccion = true;
-            if (Direccion!="Abajo")
+            if (Direccion != "Abajo")
             {
                 direccion = false;
             }
@@ -156,12 +156,12 @@ namespace LAB3_ED2.Controllers
             var extensionNuevoArchivo = string.Empty;
             var nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
             var extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
-            var DireccionArchivos=Server.MapPath(@"~/App_Data/");
+            var DireccionArchivos = Server.MapPath(@"~/App_Data/");
             if (ArchivoImportado != null)
             {
                 var textoArchivo = new byte[ArchivoImportado.InputStream.Length];
                 var i = 0;
-                using (var lectura=new BinaryReader(ArchivoImportado.InputStream))
+                using (var lectura = new BinaryReader(ArchivoImportado.InputStream))
                 {
                     while (lectura.BaseStream.Position != lectura.BaseStream.Length)
                     {
@@ -169,7 +169,7 @@ namespace LAB3_ED2.Controllers
                         i++;
                     }
                 }
-                
+
                 if (!opcionDeCifrado && extensionArchivo == ".cif")
                 {
                     extensionNuevoArchivo = ".txt";
@@ -214,14 +214,14 @@ namespace LAB3_ED2.Controllers
         {
             return View();
         }
-        
+
         [HttpPost]
         public ActionResult CifradoSDES(HttpPostedFileBase ArchivoImportado, string clave, string Opcion)
         {
             var extensionNuevoArchivo = string.Empty;
             var nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
             var extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
-            var DireccionArchivos=Server.MapPath(@"~/Others/");
+            var DireccionArchivos = Server.MapPath(@"~/Others/");
             if (ArchivoImportado != null)
             {
                 int NumeroClave = Int32.Parse(clave);
@@ -229,7 +229,7 @@ namespace LAB3_ED2.Controllers
                 {
                     throw new FormatException("La clave no cumple con el formato establecido.");
                 }
-                if (Opcion=="Decifrar" && extensionArchivo == ".cif")
+                if (Opcion == "Decifrar" && extensionArchivo == ".cif")
                 {
                     extensionNuevoArchivo = ".txt";
                     EncriptacionModel.ObtenerKeys(NumeroClave, DireccionArchivos);
@@ -237,7 +237,14 @@ namespace LAB3_ED2.Controllers
                 if (Opcion == "Cifrar" && extensionArchivo == ".txt")
                 {
                     extensionNuevoArchivo = ".cif";
-                    EncriptacionModel.ObtenerKeys(NumeroClave, DireccionArchivos);
+                    var Keys = EncriptacionModel.ObtenerKeys(NumeroClave, DireccionArchivos);
+                    using (var lectura = new BinaryReader(ArchivoImportado.InputStream))
+                    {
+                        while (lectura.BaseStream.Position != lectura.BaseStream.Length)
+                        {
+                             var ByteEncriptado=EncriptacionModel.SDES(DireccionArchivos,lectura.ReadByte(),Keys[0],Keys[1]);
+                        }
+                    }
                 }
 
             }

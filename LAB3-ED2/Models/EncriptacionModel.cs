@@ -452,15 +452,47 @@ namespace LAB3_ED2.Models
             var BlockOneAfterLS2 = LeftShiftTwo(BlockOneAfterLS1);
             var BlockTwoAfterLS2 = LeftShiftTwo(BlockTwoAfterLS1);
             var KeyTwo = PermutacionX(BlockOneAfterLS2 + BlockTwoAfterLS2, DireccionArchivos, 8);
-            return null;
+            GeneratedKeys[0] = KeyOne;
+            GeneratedKeys[1] = KeyTwo;
+            return GeneratedKeys;
         }
-        public static byte SDES()
+        public static byte SDES(string DireccionArchivos,byte ByteOriginal,string Key1, string Key2)
         {
+            var ByteBinario = Convert.ToString(ByteOriginal, 2);
+            var BinaryAfterIP = IP(DireccionArchivos,ByteBinario);
+            var ByteSeparadoAfterIP = new string[2];
+            for (int i = 0; i < BinaryAfterIP.Length; i++)
+            {
+                if (i < 3)
+                {
+                    ByteSeparadoAfterIP[0] += BinaryAfterIP[i];
+                }
+                else
+                {
+                    ByteSeparadoAfterIP[1] += BinaryAfterIP[i];
+                }
+            }
+            //Mandar Bloque2
+            var Block2Round1=CifradoGeneralSDES(ByteSeparadoAfterIP[1], Key1);
+            //Bloque2Round1 XOR B1=Bloque1.1
+
+            //Union Bloque 1.1 + Bloque2
+
+            //Swap (Bloque2,Bloque1.1)
+
+            //Mandar Bloque1.1
+
+            //Bloque1.1Round2 XOR Bloque2=Bloque3
+
+            //Union Bloque3+ Bloque1.1
+
+            //IP inversa
             return 0;
         }
+        //Metodos SDES-Keys
         public static string LeftShiftOne(string KeyAfterP10)
         {
-            string Result = "";
+            var Result = string.Empty;
             for (int i = 1; i < KeyAfterP10.Length; i++)
             {
                 Result += KeyAfterP10[i];
@@ -470,7 +502,7 @@ namespace LAB3_ED2.Models
         }
         public static string LeftShiftTwo(string KeyAfterP10)
         {
-            string Result = "";
+            var Result = string.Empty;
             for (int i = 2; i < KeyAfterP10.Length; i++)
             {
                 Result += KeyAfterP10[i];
@@ -501,6 +533,33 @@ namespace LAB3_ED2.Models
             }
             return ArregloNuevasPosiciones;
         }
-
+        //Metodos SDES-Byte
+        public static string IP(string DireccionArchivos,string ByteBinarioOriginal)
+        {
+            var ArregloPosiciones = new int[8];
+            var ArregloNuevasPosiciones = string.Empty;
+            var contador = 0;
+            using (var Archivo = new FileStream((DireccionArchivos + "IP.txt"), FileMode.OpenOrCreate))
+            {
+                using (var Lectura = new BinaryReader(Archivo))
+                {
+                    while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
+                    {
+                        ArregloPosiciones[contador] = Int32.Parse(Convert.ToString(Convert.ToChar(Lectura.ReadByte())));
+                        contador++;
+                    }
+                }
+            }
+            for (int i = 0; i < ArregloPosiciones.Length; i++)
+            {
+                ArregloNuevasPosiciones += (ByteBinarioOriginal[ArregloPosiciones[i]]);
+            }
+            return ArregloNuevasPosiciones;
+        }
+        //Metodos que se hacen mas de una vez
+        public static string CifradoGeneralSDES(string Bloque, string Key)
+        {
+            return "";
+        }
     }
 }
