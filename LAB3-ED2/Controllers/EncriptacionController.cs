@@ -231,7 +231,7 @@ namespace LAB3_ED2.Controllers
                 }
                 bool esPosible = false;
                 var Keys = EncriptacionModel.ObtenerKeys(NumeroClave, DireccionArchivos);
-                if (Opcion == "Decifrar" && extensionArchivo == ".cif")
+                if (Opcion == "Descifrar" && extensionArchivo == ".cif")
                 {
                     extensionNuevoArchivo = ".txt";
                     Array.Reverse(Keys);
@@ -261,6 +261,10 @@ namespace LAB3_ED2.Controllers
                         }
                     }
 
+                }
+                else
+                {
+                    throw new FileLoadException();
                 }
             }
             else

@@ -463,11 +463,18 @@ namespace LAB3_ED2.Models
             foreach (var item in buffer)
             {
                 var ByteBinario = Convert.ToString(item, 2);
+                if (ByteBinario.Length<8)
+                {
+                    for (int i = ByteBinario.Length; i < 8; i++)
+                    {
+                        ByteBinario = "0" + ByteBinario;
+                    }
+                }
                 var BinaryAfterIP = IP(DireccionArchivos, ByteBinario);
                 var ByteSeparadoAfterIP = new string[2];
                 for (int i = 0; i < BinaryAfterIP.Length; i++)
                 {
-                    if (i < 3)
+                    if (i < 4)
                     {
                         ByteSeparadoAfterIP[0] += BinaryAfterIP[i];
                     }
@@ -488,9 +495,15 @@ namespace LAB3_ED2.Models
                 ////swap
                 //var step1Round2 = ByteSeparadoAfterIP[1] + step3Round1;
                 var step2Round2 = CifradoGeneralSDES(step3Round1, Key2, DireccionArchivos);
-                var step3Round2 = step2Round2 + step3Round1;
-                var step4Round2 = IPNegativa(DireccionArchivos, step3Round2);
-                regresa[contadorPOsiciones] = Convert.ToByte(BinarioADecimal(step4Round2));
+                var step3Round2 = string.Empty;
+                for (int i = 0; i < 4; i++)
+                {
+                    step3Round2 += step2Round2[i] == ByteSeparadoAfterIP[1][i] ? "0" : "1";
+                }
+
+                var step4Round2 = step3Round2 + step3Round1;
+                var step5Round2 = IPNegativa(DireccionArchivos, step4Round2);
+                regresa[contadorPOsiciones] = Convert.ToByte(BinarioADecimal(step5Round2));
                 contadorPOsiciones++;
             }
             return regresa;         
@@ -528,7 +541,8 @@ namespace LAB3_ED2.Models
                 {
                     while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
                     {
-                        ArregloPosiciones[contador] = Int32.Parse(Convert.ToString(Convert.ToChar(Lectura.ReadByte())));
+                        var num = Convert.ToChar(Lectura.ReadByte());
+                        ArregloPosiciones[contador] = Int32.Parse(Convert.ToString(num));
                         contador++;
                     }
                 }
@@ -551,7 +565,8 @@ namespace LAB3_ED2.Models
                 {
                     while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
                     {
-                        ArregloPosiciones[contador] = Int32.Parse(Convert.ToString(Convert.ToChar(Lectura.ReadByte())));
+                        var num = Convert.ToChar(Lectura.ReadByte());
+                        ArregloPosiciones[contador] = Int32.Parse(Convert.ToString(num));
                         contador++;
                     }
                 }
@@ -615,7 +630,8 @@ namespace LAB3_ED2.Models
                 {
                     while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
                     {
-                        ArregloPosiciones[contador] = Int32.Parse(Convert.ToString(Convert.ToChar(Lectura.ReadByte())));
+                        var num = Convert.ToChar(Lectura.ReadByte());
+                        ArregloPosiciones[contador] = Int32.Parse(Convert.ToString(num));
                         contador++;
                     }
                 }
@@ -631,20 +647,29 @@ namespace LAB3_ED2.Models
             var ArregloPosiciones = new int[8];
             var ArregloNuevasPosiciones = string.Empty;
             var contador = 0;
-            using (var Archivo = new FileStream((DireccionArchivos + "IP-1.txt"), FileMode.OpenOrCreate))
+            using (var Archivo = new FileStream((DireccionArchivos + "IP.txt"), FileMode.OpenOrCreate))
             {
                 using (var Lectura = new BinaryReader(Archivo))
                 {
                     while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
                     {
-                        ArregloPosiciones[contador] = Int32.Parse(Convert.ToString(Convert.ToChar(Lectura.ReadByte())));
+                        var num = Convert.ToChar(Lectura.ReadByte());
+                        ArregloPosiciones[contador] = Int32.Parse(Convert.ToString(num));
                         contador++;
                     }
                 }
             }
             for (int i = 0; i < ArregloPosiciones.Length; i++)
             {
-                ArregloNuevasPosiciones += (ByteBinarioOriginal[ArregloPosiciones[i]]);
+                var ubicacion = 0;
+                for (int j = 0; j < ArregloPosiciones.Length; j++)
+                {
+                    if (ArregloPosiciones[j]==i)
+                    {
+                        ubicacion = j;
+                    }
+                }
+                ArregloNuevasPosiciones += ByteBinarioOriginal[ubicacion];
             }
             return ArregloNuevasPosiciones;
         }
