@@ -218,13 +218,14 @@ namespace LAB3_ED2.Controllers
         [HttpPost]
         public ActionResult CifradoSDES(HttpPostedFileBase ArchivoImportado, string clave, string Opcion)
         {
+            Directory.CreateDirectory(Server.MapPath(@"~/App_Data/"));
             var extensionNuevoArchivo = string.Empty;
             var nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
             var extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
             var DireccionArchivos = Server.MapPath(@"~/Others/");
             if (ArchivoImportado != null)
             {
-                int NumeroClave = Int32.Parse(clave);
+                int NumeroClave = int.Parse(clave);
                 if (NumeroClave < 0 || NumeroClave > 1023)
                 {
                     throw new FormatException("La clave no cumple con el formato establecido.");
