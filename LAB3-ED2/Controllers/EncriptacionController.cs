@@ -222,6 +222,7 @@ namespace LAB3_ED2.Controllers
             var nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
             var extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
             var DireccionArchivos = Server.MapPath(@"~/Others/");
+            EncriptacionModel.SBoxes("01010101");
             if (ArchivoImportado != null)
             {
                 int NumeroClave = Int32.Parse(clave);

@@ -556,6 +556,42 @@ namespace LAB3_ED2.Models
             }
             return ArregloNuevasPosiciones;
         }
+        public static void SBoxes(string ByteBinarioOriginal)
+        {
+            var sBox0 = new string[4, 4];
+            var sBox1 = new string[4, 4];
+            sBox1[0, 0] = "00";
+            sBox1[1, 1] = sBox1[2, 1] = sBox1[3, 2] = sBox1[2, 3] = sBox0[2, 0] = sBox0[0, 1] = sBox0[1, 3] = sBox0[2, 3] = sBox1[0, 0];
+            sBox0[0, 0] = "01";
+            sBox0[3, 1] = sBox0[0, 0] = sBox0[1, 2] = sBox0[2, 2] = sBox1[0, 1] = sBox1[3, 1] = sBox1[1, 2] = sBox1[2, 2] = sBox0[0, 0];
+            sBox0[1, 0] = "11";
+            sBox0[3, 0] = sBox0[0, 2] = sBox0[3, 2] = sBox0[2, 3] = sBox1[2, 0] = sBox1[0, 3] = sBox1[1, 3] = sBox1[3, 3] = sBox0[1, 0];
+            sBox0[1, 1] = "10";
+            sBox0[2, 1] = sBox0[0, 3] = sBox0[3, 3] = sBox1[1, 0]= sBox1[3, 0]= sBox1[0, 2] = sBox0[1, 1];
+            var positions = { ByteBinarioOriginal[0] + ByteBinarioOriginal[3], ByteBinarioOriginal[1] + ByteBinarioOriginal[2], ByteBinarioOriginal[4] + ByteBinarioOriginal[7], ByteBinarioOriginal[5] + ByteBinarioOriginal[6] };
+            var postionsDecimal = new int[4];
+            for (int i = 0; i < 4; i++)
+            {
+                if (positions[i]=="00")
+                {
+                    positionsDecimal[i] = 0;
+                }
+                else if (positions[i]="01")
+                {
+                    positionsDecimal[i] = 1;
+                }
+                else if (positions[i] = "10")
+                {
+                    positionsDecimal[i] = 2;
+                }
+                else if (positions[i] = "11")
+                {
+                    positionsDecimal[i] = 3;
+                }
+            }
+            return (sBox0[postionsDecimal[0], postionsDecimal[1]] + sBox1[postionsDecimal[2], postionsDecimal[3]]);
+            
+        }
         //Metodos que se hacen mas de una vez
         public static string CifradoGeneralSDES(string Bloque, string Key)
         {
