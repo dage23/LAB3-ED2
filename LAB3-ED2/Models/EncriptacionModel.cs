@@ -556,7 +556,7 @@ namespace LAB3_ED2.Models
             }
             return ArregloNuevasPosiciones;
         }
-        public static void SBoxes(string ByteBinarioOriginal)
+        public static string SBoxes(string ByteBinarioOriginal)
         {
             var sBox0 = new string[4, 4];
             var sBox1 = new string[4, 4];
@@ -592,7 +592,7 @@ namespace LAB3_ED2.Models
             return (sBox0[postionsDecimal[0], postionsDecimal[1]] + sBox1[postionsDecimal[2], postionsDecimal[3]]);
             
         }
-        public static void EP(string DireccionArchivos, string ByteBinarioOriginal)
+        public static string EP(string DireccionArchivos, string ByteBinarioOriginal)
         {
             var ArregloPosiciones = new int[8];
             var ArregloNuevasPosiciones = string.Empty;
@@ -614,7 +614,7 @@ namespace LAB3_ED2.Models
             }
             return ArregloNuevasPosiciones;
         }
-        public static void IPNegativa()
+        public static string IPNegativa()
         {
             var ArregloPosiciones = new int[8];
             var ArregloNuevasPosiciones = string.Empty;
@@ -638,10 +638,26 @@ namespace LAB3_ED2.Models
         }
         //Metodos que se hacen mas de una vez
 
-        public static string CifradoGeneralSDES(string Bloque, string Key)
+        public static string CifradoGeneralSDES(string Bloque, string Key, string DireccionArchivos)
         {
+            var step1EP = EP(DireccionArchivos, Bloque);
+            //Xor with k1
+            var step2Xor = string.Empty;
+            for (int i = 0; i < 8; i++)
+            {
+                if (step1EP[i]==Key[i])
+                {
+                    step2Xor = step2Xor + "0";
+                }
+                else
+                {
+                    step2Xor = step2Xor + "1";
+                }
+            }
+            var step3SBoxes = SBoxes(step2Xor);
+            var step4P4 = PermutacionX(step3SBoxes, DireccionArchivos, 4);
 
-            return "";
+            return step4P4;
         }
     }
 }
