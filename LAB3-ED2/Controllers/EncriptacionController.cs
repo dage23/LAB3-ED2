@@ -222,7 +222,6 @@ namespace LAB3_ED2.Controllers
             var nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
             var extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
             var DireccionArchivos = Server.MapPath(@"~/Others/");
-            EncriptacionModel.SBoxes("01010101");
             if (ArchivoImportado != null)
             {
                 int NumeroClave = Int32.Parse(clave);
@@ -241,9 +240,11 @@ namespace LAB3_ED2.Controllers
                     var Keys = EncriptacionModel.ObtenerKeys(NumeroClave, DireccionArchivos);
                     using (var lectura = new BinaryReader(ArchivoImportado.InputStream))
                     {
+                        var byteBuffer = new byte[bufferLength];
                         while (lectura.BaseStream.Position != lectura.BaseStream.Length)
                         {
-                             var ByteEncriptado=EncriptacionModel.SDES(DireccionArchivos,lectura.ReadByte(),Keys[0],Keys[1]);
+                            byteBuffer = Lectura.ReadBytes(bufferLength);
+                            var ByteEncriptado=EncriptacionModel.SDES(DireccionArchivos,lectura.ReadByte(),Keys[0],Keys[1]);
                         }
                     }
                 }

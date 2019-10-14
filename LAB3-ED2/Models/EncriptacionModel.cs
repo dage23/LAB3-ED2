@@ -473,21 +473,23 @@ namespace LAB3_ED2.Models
                 }
             }
             //Mandar Bloque2
-            var Block2Round1=CifradoGeneralSDES(ByteSeparadoAfterIP[1], Key1);
-            //Bloque2Round1 XOR B1=Bloque1.1
-
-            //Union Bloque 1.1 + Bloque2
-
-            //Swap (Bloque2,Bloque1.1)
-
-            //Mandar Bloque1.1
-
-            //Bloque1.1Round2 XOR Bloque2=Bloque3
-
-            //Union Bloque3+ Bloque1.1
-
-            //IP inversa
-            return 0;
+            var step2Round1=CifradoGeneralSDES(ByteSeparadoAfterIP[1], Key1);
+            var step3Round1 = string.Empty;
+            for (int i = 0; i < 4; i++)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    step3Round1 += step2Round1[i] == ByteSeparadoAfterIP[0][i] ? "0" : "1";
+                }
+            }
+            ////NO ES NECESARIO PERO POR SEGUIR LOS PASOS
+            //var step4Round1 = step3Round1 + ByteSeparadoAfterIP[1];
+            ////swap
+            //var step1Round2 = ByteSeparadoAfterIP[1] + step3Round1;
+            var step2Round2= CifradoGeneralSDES(step3Round1, Key2);
+            var step3Round2 = step2Round2 + step3Round1;
+            var step4Round2 = IPNegativa(DireccionArchivos, step3Round2);
+            return step4Round2;            
         }
         //Metodos SDES-Keys
         public static string LeftShiftOne(string KeyAfterP10)
@@ -614,7 +616,7 @@ namespace LAB3_ED2.Models
             }
             return ArregloNuevasPosiciones;
         }
-        public static string IPNegativa()
+        public static string IPNegativa(string DireccionArchivos, string ByteBinarioOriginal)
         {
             var ArregloPosiciones = new int[8];
             var ArregloNuevasPosiciones = string.Empty;
@@ -645,14 +647,7 @@ namespace LAB3_ED2.Models
             var step2Xor = string.Empty;
             for (int i = 0; i < 8; i++)
             {
-                if (step1EP[i]==Key[i])
-                {
-                    step2Xor = step2Xor + "0";
-                }
-                else
-                {
-                    step2Xor = step2Xor + "1";
-                }
+                step2Xor += step1EP[i] == Key[i] ? "0" : "1";
             }
             var step3SBoxes = SBoxes(step2Xor);
             var step4P4 = PermutacionX(step3SBoxes, DireccionArchivos, 4);
