@@ -1,5 +1,8 @@
 # LAB3-ED2
 Especificaciones:
+*Cifrado SDES:
+Permutaciones ubicadas en la carpeta "Others".
+
 *Cifrado Cesar
 La palabra clave no debe de contener caracteres repetidos
 
