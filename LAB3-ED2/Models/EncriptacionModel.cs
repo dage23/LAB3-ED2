@@ -503,7 +503,7 @@ namespace LAB3_ED2.Models
 
                 var step4Round2 = step3Round2 + step3Round1;
                 var step5Round2 = IPNegativa(DireccionArchivos, step4Round2);
-                regresa[contadorPOsiciones] = Convert.ToByte(BinarioADecimal(step5Round2));
+                regresa[contadorPOsiciones] = Convert.ToByte(Convert.ToInt32(step5Round2, 2));
                 contadorPOsiciones++;
             }
             return regresa;         
@@ -688,20 +688,6 @@ namespace LAB3_ED2.Models
             var step4P4 = PermutacionX(step3SBoxes, DireccionArchivos, 4);
 
             return step4P4;
-        }
-        static int BinarioADecimal(string binario)
-        {
-            var arrayBinario = binario.ToCharArray();
-            Array.Reverse(arrayBinario);
-            var sum = 0;
-            for (int i = 0; i < arrayBinario.Length; i++)
-            {
-                if (arrayBinario[i] == '1')
-                {
-                    sum += (int)Math.Pow(2, i);
-                }
-            }
-            return sum;
         }
     }
 }
