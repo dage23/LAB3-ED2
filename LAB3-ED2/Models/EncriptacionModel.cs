@@ -592,9 +592,55 @@ namespace LAB3_ED2.Models
             return (sBox0[postionsDecimal[0], postionsDecimal[1]] + sBox1[postionsDecimal[2], postionsDecimal[3]]);
             
         }
+        public static void EP(string DireccionArchivos, string ByteBinarioOriginal)
+        {
+            var ArregloPosiciones = new int[8];
+            var ArregloNuevasPosiciones = string.Empty;
+            var contador = 0;
+            using (var Archivo = new FileStream((DireccionArchivos + "EP.txt"), FileMode.OpenOrCreate))
+            {
+                using (var Lectura = new BinaryReader(Archivo))
+                {
+                    while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
+                    {
+                        ArregloPosiciones[contador] = Int32.Parse(Convert.ToString(Convert.ToChar(Lectura.ReadByte())));
+                        contador++;
+                    }
+                }
+            }
+            for (int i = 0; i < ArregloPosiciones.Length; i++)
+            {
+                ArregloNuevasPosiciones += (ByteBinarioOriginal[ArregloPosiciones[i]]);
+            }
+            return ArregloNuevasPosiciones;
+        }
+        public static void IPNegativa()
+        {
+            var ArregloPosiciones = new int[8];
+            var ArregloNuevasPosiciones = string.Empty;
+            var contador = 0;
+            using (var Archivo = new FileStream((DireccionArchivos + "IP-1.txt"), FileMode.OpenOrCreate))
+            {
+                using (var Lectura = new BinaryReader(Archivo))
+                {
+                    while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
+                    {
+                        ArregloPosiciones[contador] = Int32.Parse(Convert.ToString(Convert.ToChar(Lectura.ReadByte())));
+                        contador++;
+                    }
+                }
+            }
+            for (int i = 0; i < ArregloPosiciones.Length; i++)
+            {
+                ArregloNuevasPosiciones += (ByteBinarioOriginal[ArregloPosiciones[i]]);
+            }
+            return ArregloNuevasPosiciones;
+        }
         //Metodos que se hacen mas de una vez
+
         public static string CifradoGeneralSDES(string Bloque, string Key)
         {
+
             return "";
         }
     }
