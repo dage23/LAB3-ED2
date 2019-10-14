@@ -229,26 +229,39 @@ namespace LAB3_ED2.Controllers
                 {
                     throw new FormatException("La clave no cumple con el formato establecido.");
                 }
+                bool esPosible = false;
+                var Keys = EncriptacionModel.ObtenerKeys(NumeroClave, DireccionArchivos);
                 if (Opcion == "Decifrar" && extensionArchivo == ".cif")
                 {
                     extensionNuevoArchivo = ".txt";
-                    EncriptacionModel.ObtenerKeys(NumeroClave, DireccionArchivos);
+                    Array.Reverse(Keys);
+                    esPosible = true;
                 }
                 if (Opcion == "Cifrar" && extensionArchivo == ".txt")
                 {
                     extensionNuevoArchivo = ".cif";
-                    var Keys = EncriptacionModel.ObtenerKeys(NumeroClave, DireccionArchivos);
+                    esPosible = true;
+                }
+                if (esPosible)
+                {
                     using (var lectura = new BinaryReader(ArchivoImportado.InputStream))
                     {
                         var byteBuffer = new byte[bufferLength];
                         while (lectura.BaseStream.Position != lectura.BaseStream.Length)
                         {
-                            byteBuffer = Lectura.ReadBytes(bufferLength);
-                            var ByteEncriptado=EncriptacionModel.SDES(DireccionArchivos,lectura.ReadByte(),Keys[0],Keys[1]);
+                            byteBuffer = lectura.ReadBytes(bufferLength);
+                            var textoEncriptado = EncriptacionModel.SDES(DireccionArchivos, byteBuffer, Keys[0], Keys[1]);
+                            using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + nombreArchivo + extensionNuevoArchivo), FileMode.OpenOrCreate))
+                            {
+                                using (var writer = new BinaryWriter(writeStream))
+                                {
+                                    writer.Write(textoEncriptado);
+                                }
+                            }
                         }
                     }
-                }
 
+                }
             }
             else
             {
@@ -257,6 +270,6 @@ namespace LAB3_ED2.Controllers
             var FileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionNuevoArchivo;
             return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
         }
-
+        
     }
 }

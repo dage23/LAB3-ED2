@@ -456,40 +456,44 @@ namespace LAB3_ED2.Models
             GeneratedKeys[1] = KeyTwo;
             return GeneratedKeys;
         }
-        public static byte SDES(string DireccionArchivos,byte ByteOriginal,string Key1, string Key2)
+        public static byte[] SDES(string DireccionArchivos, byte[] buffer,string Key1, string Key2)
         {
-            var ByteBinario = Convert.ToString(ByteOriginal, 2);
-            var BinaryAfterIP = IP(DireccionArchivos,ByteBinario);
-            var ByteSeparadoAfterIP = new string[2];
-            for (int i = 0; i < BinaryAfterIP.Length; i++)
+            var regresa = new byte[buffer.Length];
+            var contadorPOsiciones = 0;
+            foreach (var item in buffer)
             {
-                if (i < 3)
+                var ByteBinario = Convert.ToString(item, 2);
+                var BinaryAfterIP = IP(DireccionArchivos, ByteBinario);
+                var ByteSeparadoAfterIP = new string[2];
+                for (int i = 0; i < BinaryAfterIP.Length; i++)
                 {
-                    ByteSeparadoAfterIP[0] += BinaryAfterIP[i];
+                    if (i < 3)
+                    {
+                        ByteSeparadoAfterIP[0] += BinaryAfterIP[i];
+                    }
+                    else
+                    {
+                        ByteSeparadoAfterIP[1] += BinaryAfterIP[i];
+                    }
                 }
-                else
-                {
-                    ByteSeparadoAfterIP[1] += BinaryAfterIP[i];
-                }
-            }
-            //Mandar Bloque2
-            var step2Round1=CifradoGeneralSDES(ByteSeparadoAfterIP[1], Key1);
-            var step3Round1 = string.Empty;
-            for (int i = 0; i < 4; i++)
-            {
-                for (int i = 0; i < 8; i++)
+                //Mandar Bloque2
+                var step2Round1 = CifradoGeneralSDES(ByteSeparadoAfterIP[1], Key1, DireccionArchivos);
+                var step3Round1 = string.Empty;
+                for (int i = 0; i < 4; i++)
                 {
                     step3Round1 += step2Round1[i] == ByteSeparadoAfterIP[0][i] ? "0" : "1";
                 }
+                ////NO ES NECESARIO PERO POR SEGUIR LOS PASOS
+                //var step4Round1 = step3Round1 + ByteSeparadoAfterIP[1];
+                ////swap
+                //var step1Round2 = ByteSeparadoAfterIP[1] + step3Round1;
+                var step2Round2 = CifradoGeneralSDES(step3Round1, Key2, DireccionArchivos);
+                var step3Round2 = step2Round2 + step3Round1;
+                var step4Round2 = IPNegativa(DireccionArchivos, step3Round2);
+                regresa[contadorPOsiciones] = Convert.ToByte(BinarioADecimal(step4Round2));
+                contadorPOsiciones++;
             }
-            ////NO ES NECESARIO PERO POR SEGUIR LOS PASOS
-            //var step4Round1 = step3Round1 + ByteSeparadoAfterIP[1];
-            ////swap
-            //var step1Round2 = ByteSeparadoAfterIP[1] + step3Round1;
-            var step2Round2= CifradoGeneralSDES(step3Round1, Key2);
-            var step3Round2 = step2Round2 + step3Round1;
-            var step4Round2 = IPNegativa(DireccionArchivos, step3Round2);
-            return step4Round2;            
+            return regresa;         
         }
         //Metodos SDES-Keys
         public static string LeftShiftOne(string KeyAfterP10)
@@ -558,8 +562,9 @@ namespace LAB3_ED2.Models
             }
             return ArregloNuevasPosiciones;
         }
-        public static string SBoxes(string ByteBinarioOriginal)
+        public static string SBoxes(string binariostring)
         {
+            char[] AAA = binariostring.ToCharArray();
             var sBox0 = new string[4, 4];
             var sBox1 = new string[4, 4];
             sBox1[0, 0] = "00";
@@ -570,28 +575,33 @@ namespace LAB3_ED2.Models
             sBox0[3, 0] = sBox0[0, 2] = sBox0[3, 2] = sBox0[2, 3] = sBox1[2, 0] = sBox1[0, 3] = sBox1[1, 3] = sBox1[3, 3] = sBox0[1, 0];
             sBox0[1, 1] = "10";
             sBox0[2, 1] = sBox0[0, 3] = sBox0[3, 3] = sBox1[1, 0]= sBox1[3, 0]= sBox1[0, 2] = sBox0[1, 1];
-            var positions = { ByteBinarioOriginal[0] + ByteBinarioOriginal[3], ByteBinarioOriginal[1] + ByteBinarioOriginal[2], ByteBinarioOriginal[4] + ByteBinarioOriginal[7], ByteBinarioOriginal[5] + ByteBinarioOriginal[6] };
-            var postionsDecimal = new int[4];
+            var positions = new string[4];
+            positions[0] = AAA[0] + ""+AAA[3];
+            positions[1] = AAA[1] +""+ AAA[2];
+            positions[2] =AAA[4] + ""+AAA[7];
+            positions[3] = AAA[5] + ""+AAA[6];
+             
+            var positionsDecimal = new int[4];
             for (int i = 0; i < 4; i++)
             {
                 if (positions[i]=="00")
                 {
                     positionsDecimal[i] = 0;
                 }
-                else if (positions[i]="01")
+                else if (positions[i]=="01")
                 {
                     positionsDecimal[i] = 1;
                 }
-                else if (positions[i] = "10")
+                else if (positions[i] == "10")
                 {
                     positionsDecimal[i] = 2;
                 }
-                else if (positions[i] = "11")
+                else if (positions[i] == "11")
                 {
                     positionsDecimal[i] = 3;
                 }
             }
-            return (sBox0[postionsDecimal[0], postionsDecimal[1]] + sBox1[postionsDecimal[2], postionsDecimal[3]]);
+            return (sBox0[positionsDecimal[0], positionsDecimal[1]] + sBox1[positionsDecimal[2], positionsDecimal[3]]);
             
         }
         public static string EP(string DireccionArchivos, string ByteBinarioOriginal)
@@ -653,6 +663,20 @@ namespace LAB3_ED2.Models
             var step4P4 = PermutacionX(step3SBoxes, DireccionArchivos, 4);
 
             return step4P4;
+        }
+        static int BinarioADecimal(string binario)
+        {
+            var arrayBinario = binario.ToCharArray();
+            Array.Reverse(arrayBinario);
+            var sum = 0;
+            for (int i = 0; i < arrayBinario.Length; i++)
+            {
+                if (arrayBinario[i] == '1')
+                {
+                    sum += (int)Math.Pow(2, i);
+                }
+            }
+            return sum;
         }
     }
 }
