@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-
+using System.IO;
 namespace LAB3_ED2.Models
 {
     public class EncriptacionModel
     {
         public static byte[] EncryptionZigZag(byte[] TextoOriginal, int CantidadNiveles)
         {
-            if (CantidadNiveles<=1)
+            if (CantidadNiveles <= 1)
             {
                 return TextoOriginal;
             }
@@ -58,7 +58,7 @@ namespace LAB3_ED2.Models
         }
         public static byte[] DecryptZZ(byte[] TextoEncriptado, int CantidadNiveles)
         {
-            if (CantidadNiveles<=1)
+            if (CantidadNiveles <= 1)
             {
                 return TextoEncriptado;
             }
@@ -196,7 +196,7 @@ namespace LAB3_ED2.Models
                     }
                 }
             }
-            var REGRESA = new byte[Ancho*Altura];
+            var REGRESA = new byte[Ancho * Altura];
             var CantidadIteraciones = Ancho < Altura ? Ancho / 2 : Altura / 2;
             var AnchoAux = Ancho;
             var AltoAux = Altura;
@@ -207,7 +207,7 @@ namespace LAB3_ED2.Models
                 {
                     for (int j = i; j < AltoAux + i; j++)
                     {
-                        REGRESA[contador] =DCircularMatriz[i, j];
+                        REGRESA[contador] = DCircularMatriz[i, j];
                         contador++;
                     }
                     for (int j = i + 1; j < AnchoAux + i; j++)
@@ -256,7 +256,7 @@ namespace LAB3_ED2.Models
                     for (int j = i; j < AnchoAux + i; j++)
                     {
                         REGRESA[contador] = DCircularMatriz[j, i];
-                        contador ++;
+                        contador++;
                     }
                     for (int j = i + 1; j < AltoAux + i; j++)
                     {
@@ -309,9 +309,9 @@ namespace LAB3_ED2.Models
             var AltoAux = Altura;
             var CantidadIteraciones = Ancho < Altura ? Ancho / 2 : Altura / 2;
             var contador = 0;
-            if(TextoEncripcion.Length<(Ancho*Altura))
+            if (TextoEncripcion.Length < (Ancho * Altura))
             {
-                for (int i = TextoEncripcion.Length; i <=Ancho*Altura; i++)
+                for (int i = TextoEncripcion.Length; i <= Ancho * Altura; i++)
                 {
                     TextoEncripcion[i] = 0;
                 }
@@ -370,7 +370,7 @@ namespace LAB3_ED2.Models
                 {
                     for (int j = i; j < AnchoAux + i; j++)
                     {
-                        DCircularMatriz[j,i] = TextoEncripcion[PosicionTexto];
+                        DCircularMatriz[j, i] = TextoEncripcion[PosicionTexto];
                         PosicionTexto++;
                     }
                     for (int j = i + 1; j < AltoAux + i; j++)
@@ -385,7 +385,7 @@ namespace LAB3_ED2.Models
                     }
                     for (int j = AltoAux - 2 + i; j > i; j--)
                     {
-                        DCircularMatriz[i,j] = TextoEncripcion[PosicionTexto];
+                        DCircularMatriz[i, j] = TextoEncripcion[PosicionTexto];
                         PosicionTexto++;
                     }
                     AnchoAux = AnchoAux - 2;
@@ -405,7 +405,7 @@ namespace LAB3_ED2.Models
                 {
                     for (int i = CantidadIteraciones; i < AnchoAux + CantidadIteraciones; i++)
                     {
-                        DCircularMatriz[i,CantidadIteraciones] = TextoEncripcion[PosicionTexto];
+                        DCircularMatriz[i, CantidadIteraciones] = TextoEncripcion[PosicionTexto];
                         PosicionTexto++;
                     }
                     AnchoAux = 0;
@@ -413,17 +413,281 @@ namespace LAB3_ED2.Models
                 }
             }
 
-            var REGRESA = new byte[Ancho*Altura];
+            var REGRESA = new byte[Ancho * Altura];
             for (int i = 0; i < Altura; i++)
             {
                 for (int j = 0; j < Ancho; j++)
                 {
-                    REGRESA[contador]=DCircularMatriz[j, i];
+                    REGRESA[contador] = DCircularMatriz[j, i];
                     contador++;
                 }
             }
             return REGRESA;
         }
-    }
+        public static string[] ObtenerKeys(int OriginalKey, string DireccionArchivos)
+        {
+            var GeneratedKeys = new string[2];
+            var KeyBinario = Convert.ToString(OriginalKey, 2);
+            if (KeyBinario.Length < 10)
+            {
+                KeyBinario = KeyBinario.PadLeft(10, '0');
+            }
+            var KeyAfterP10 = PermutacionX(KeyBinario, DireccionArchivos, 10);
+            var KeyBinariaSeparada = new string[2];
+            for (int i = 0; i < KeyAfterP10.Length; i++)
+            {
+                if (i < 5)
+                {
+                    KeyBinariaSeparada[0] += KeyAfterP10[i];
+                }
+                else
+                {
+                    KeyBinariaSeparada[1] += KeyAfterP10[i];
+                }
+            }
+            var BlockOneAfterLS1 = LeftShiftOne(KeyBinariaSeparada[0]);
+            var BlockTwoAfterLS1 = LeftShiftOne(KeyBinariaSeparada[1]);
+            var KeyOne = PermutacionX(BlockOneAfterLS1 + BlockTwoAfterLS1, DireccionArchivos, 8);
 
+            var BlockOneAfterLS2 = LeftShiftTwo(BlockOneAfterLS1);
+            var BlockTwoAfterLS2 = LeftShiftTwo(BlockTwoAfterLS1);
+            var KeyTwo = PermutacionX(BlockOneAfterLS2 + BlockTwoAfterLS2, DireccionArchivos, 8);
+            GeneratedKeys[0] = KeyOne;
+            GeneratedKeys[1] = KeyTwo;
+            return GeneratedKeys;
+        }
+        public static byte[] SDES(string DireccionArchivos, byte[] buffer,string Key1, string Key2)
+        {
+            var regresa = new byte[buffer.Length];
+            var contadorPOsiciones = 0;
+            foreach (var item in buffer)
+            {
+                var ByteBinario = Convert.ToString(item, 2);
+                if (ByteBinario.Length<8)
+                {
+                    for (int i = ByteBinario.Length; i < 8; i++)
+                    {
+                        ByteBinario = "0" + ByteBinario;
+                    }
+                }
+                var BinaryAfterIP = IP(DireccionArchivos, ByteBinario);
+                var ByteSeparadoAfterIP = new string[2];
+                for (int i = 0; i < BinaryAfterIP.Length; i++)
+                {
+                    if (i < 4)
+                    {
+                        ByteSeparadoAfterIP[0] += BinaryAfterIP[i];
+                    }
+                    else
+                    {
+                        ByteSeparadoAfterIP[1] += BinaryAfterIP[i];
+                    }
+                }
+                //Mandar Bloque2
+                var step2Round1 = CifradoGeneralSDES(ByteSeparadoAfterIP[1], Key1, DireccionArchivos);
+                var step3Round1 = string.Empty;
+                for (int i = 0; i < 4; i++)
+                {
+                    step3Round1 += step2Round1[i] == ByteSeparadoAfterIP[0][i] ? "0" : "1";
+                }
+                ////NO ES NECESARIO PERO POR SEGUIR LOS PASOS
+                //var step4Round1 = step3Round1 + ByteSeparadoAfterIP[1];
+                ////swap
+                //var step1Round2 = ByteSeparadoAfterIP[1] + step3Round1;
+                var step2Round2 = CifradoGeneralSDES(step3Round1, Key2, DireccionArchivos);
+                var step3Round2 = string.Empty;
+                for (int i = 0; i < 4; i++)
+                {
+                    step3Round2 += step2Round2[i] == ByteSeparadoAfterIP[1][i] ? "0" : "1";
+                }
+
+                var step4Round2 = step3Round2 + step3Round1;
+                var step5Round2 = IPNegativa(DireccionArchivos, step4Round2);
+                regresa[contadorPOsiciones] = Convert.ToByte(Convert.ToInt32(step5Round2, 2));
+                contadorPOsiciones++;
+            }
+            return regresa;         
+        }
+        //Metodos SDES-Keys
+        public static string LeftShiftOne(string KeyAfterP10)
+        {
+            var Result = string.Empty;
+            for (int i = 1; i < KeyAfterP10.Length; i++)
+            {
+                Result += KeyAfterP10[i];
+            }
+            Result += KeyAfterP10[0];
+            return Result;
+        }
+        public static string LeftShiftTwo(string KeyAfterP10)
+        {
+            var Result = string.Empty;
+            for (int i = 2; i < KeyAfterP10.Length; i++)
+            {
+                Result += KeyAfterP10[i];
+            }
+            Result += (KeyAfterP10[0]);
+            Result += KeyAfterP10[1];
+            return Result;
+        }
+        public static string PermutacionX(string OriginalKey, string DireccionArchivo, int Tipo)
+        {
+            var ArregloPosiciones = new int[Tipo];
+            var ArregloNuevasPosiciones = string.Empty;
+            var contador = 0;
+            using (var Archivo = new FileStream((DireccionArchivo + "P" + Tipo + ".txt"), FileMode.OpenOrCreate))
+            {
+                using (var Lectura = new BinaryReader(Archivo))
+                {
+                    while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
+                    {
+                        var num = Convert.ToChar(Lectura.ReadByte());
+                        ArregloPosiciones[contador] = Int32.Parse(Convert.ToString(num));
+                        contador++;
+                    }
+                }
+            }
+            for (int i = 0; i < ArregloPosiciones.Length; i++)
+            {
+                ArregloNuevasPosiciones += (OriginalKey[ArregloPosiciones[i]]);
+            }
+            return ArregloNuevasPosiciones;
+        }
+        //Metodos SDES-Byte
+        public static string IP(string DireccionArchivos,string ByteBinarioOriginal)
+        {
+            var ArregloPosiciones = new int[8];
+            var ArregloNuevasPosiciones = string.Empty;
+            var contador = 0;
+            using (var Archivo = new FileStream((DireccionArchivos + "IP.txt"), FileMode.OpenOrCreate))
+            {
+                using (var Lectura = new BinaryReader(Archivo))
+                {
+                    while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
+                    {
+                        var num = Convert.ToChar(Lectura.ReadByte());
+                        ArregloPosiciones[contador] = Int32.Parse(Convert.ToString(num));
+                        contador++;
+                    }
+                }
+            }
+            for (int i = 0; i < ArregloPosiciones.Length; i++)
+            {
+                ArregloNuevasPosiciones += (ByteBinarioOriginal[ArregloPosiciones[i]]);
+            }
+            return ArregloNuevasPosiciones;
+        }
+        public static string SBoxes(string binariostring)
+        {
+            char[] AAA = binariostring.ToCharArray();
+            var sBox0 = new string[4, 4];
+            var sBox1 = new string[4, 4];
+            sBox1[0, 0] = "00";
+            sBox1[1, 1] = sBox1[2, 1] = sBox1[3, 2] = sBox1[2, 3] = sBox0[2, 0] = sBox0[0, 1] = sBox0[1, 3] = sBox0[2, 3] = sBox1[0, 0];
+            sBox0[0, 0] = "01";
+            sBox0[3, 1] = sBox0[0, 0] = sBox0[1, 2] = sBox0[2, 2] = sBox1[0, 1] = sBox1[3, 1] = sBox1[1, 2] = sBox1[2, 2] = sBox0[0, 0];
+            sBox0[1, 0] = "11";
+            sBox0[3, 0] = sBox0[0, 2] = sBox0[3, 2] = sBox0[2, 3] = sBox1[2, 0] = sBox1[0, 3] = sBox1[1, 3] = sBox1[3, 3] = sBox0[1, 0];
+            sBox0[1, 1] = "10";
+            sBox0[2, 1] = sBox0[0, 3] = sBox0[3, 3] = sBox1[1, 0]= sBox1[3, 0]= sBox1[0, 2] = sBox0[1, 1];
+            var positions = new string[4];
+            positions[0] = AAA[0] + ""+AAA[3];
+            positions[1] = AAA[1] +""+ AAA[2];
+            positions[2] =AAA[4] + ""+AAA[7];
+            positions[3] = AAA[5] + ""+AAA[6];
+             
+            var positionsDecimal = new int[4];
+            for (int i = 0; i < 4; i++)
+            {
+                if (positions[i]=="00")
+                {
+                    positionsDecimal[i] = 0;
+                }
+                else if (positions[i]=="01")
+                {
+                    positionsDecimal[i] = 1;
+                }
+                else if (positions[i] == "10")
+                {
+                    positionsDecimal[i] = 2;
+                }
+                else if (positions[i] == "11")
+                {
+                    positionsDecimal[i] = 3;
+                }
+            }
+            return (sBox0[positionsDecimal[0], positionsDecimal[1]] + sBox1[positionsDecimal[2], positionsDecimal[3]]);
+            
+        }
+        public static string EP(string DireccionArchivos, string ByteBinarioOriginal)
+        {
+            var ArregloPosiciones = new int[8];
+            var ArregloNuevasPosiciones = string.Empty;
+            var contador = 0;
+            using (var Archivo = new FileStream((DireccionArchivos + "EP.txt"), FileMode.OpenOrCreate))
+            {
+                using (var Lectura = new BinaryReader(Archivo))
+                {
+                    while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
+                    {
+                        var num = Convert.ToChar(Lectura.ReadByte());
+                        ArregloPosiciones[contador] = Int32.Parse(Convert.ToString(num));
+                        contador++;
+                    }
+                }
+            }
+            for (int i = 0; i < ArregloPosiciones.Length; i++)
+            {
+                ArregloNuevasPosiciones += (ByteBinarioOriginal[ArregloPosiciones[i]]);
+            }
+            return ArregloNuevasPosiciones;
+        }
+        public static string IPNegativa(string DireccionArchivos, string ByteBinarioOriginal)
+        {
+            var ArregloPosiciones = new int[8];
+            var ArregloNuevasPosiciones = string.Empty;
+            var contador = 0;
+            using (var Archivo = new FileStream((DireccionArchivos + "IP.txt"), FileMode.OpenOrCreate))
+            {
+                using (var Lectura = new BinaryReader(Archivo))
+                {
+                    while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
+                    {
+                        var num = Convert.ToChar(Lectura.ReadByte());
+                        ArregloPosiciones[contador] = Int32.Parse(Convert.ToString(num));
+                        contador++;
+                    }
+                }
+            }
+            for (int i = 0; i < ArregloPosiciones.Length; i++)
+            {
+                var ubicacion = 0;
+                for (int j = 0; j < ArregloPosiciones.Length; j++)
+                {
+                    if (ArregloPosiciones[j]==i)
+                    {
+                        ubicacion = j;
+                    }
+                }
+                ArregloNuevasPosiciones += ByteBinarioOriginal[ubicacion];
+            }
+            return ArregloNuevasPosiciones;
+        }
+        //Metodos que se hacen mas de una vez
+
+        public static string CifradoGeneralSDES(string Bloque, string Key, string DireccionArchivos)
+        {
+            var step1EP = EP(DireccionArchivos, Bloque);
+            //Xor with k1
+            var step2Xor = string.Empty;
+            for (int i = 0; i < 8; i++)
+            {
+                step2Xor += step1EP[i] == Key[i] ? "0" : "1";
+            }
+            var step3SBoxes = SBoxes(step2Xor);
+            var step4P4 = PermutacionX(step3SBoxes, DireccionArchivos, 4);
+
+            return step4P4;
+        }
+    }
 }

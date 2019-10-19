@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.IO;
@@ -33,7 +31,7 @@ namespace LAB3_ED2.Controllers
                 {
                     var textoArchivo = new byte[ArchivoImportado.InputStream.Length];
                     var i = 0;
-                    while (lectura.BaseStream.Position!=lectura.BaseStream.Length)
+                    while (lectura.BaseStream.Position != lectura.BaseStream.Length)
                     {
                         textoArchivo[i] = lectura.ReadByte();
                         i++;
@@ -150,7 +148,7 @@ namespace LAB3_ED2.Controllers
                 opcionDeCifrado = false;
             }
             var direccion = true;
-            if (Direccion!="Abajo")
+            if (Direccion != "Abajo")
             {
                 direccion = false;
             }
@@ -158,11 +156,12 @@ namespace LAB3_ED2.Controllers
             var extensionNuevoArchivo = string.Empty;
             var nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
             var extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
+            var DireccionArchivos = Server.MapPath(@"~/App_Data/");
             if (ArchivoImportado != null)
             {
                 var textoArchivo = new byte[ArchivoImportado.InputStream.Length];
                 var i = 0;
-                using (var lectura=new BinaryReader(ArchivoImportado.InputStream))
+                using (var lectura = new BinaryReader(ArchivoImportado.InputStream))
                 {
                     while (lectura.BaseStream.Position != lectura.BaseStream.Length)
                     {
@@ -170,7 +169,7 @@ namespace LAB3_ED2.Controllers
                         i++;
                     }
                 }
-                
+
                 if (!opcionDeCifrado && extensionArchivo == ".cif")
                 {
                     extensionNuevoArchivo = ".txt";
@@ -211,6 +210,71 @@ namespace LAB3_ED2.Controllers
             var fileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionNuevoArchivo;
             return File(fileVirtualPath, "application / force - download", Path.GetFileName(fileVirtualPath));
         }
+        public ActionResult CifradoSDES()
+        {
+            return View();
+        }
 
+        [HttpPost]
+        public ActionResult CifradoSDES(HttpPostedFileBase ArchivoImportado, string clave, string Opcion)
+        {
+            Directory.CreateDirectory(Server.MapPath(@"~/App_Data/"));
+            var extensionNuevoArchivo = string.Empty;
+            var nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
+            var extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
+            var DireccionArchivos = Server.MapPath(@"~/Others/");
+            if (ArchivoImportado != null)
+            {
+                int NumeroClave = int.Parse(clave);
+                if (NumeroClave < 0 || NumeroClave > 1023)
+                {
+                    throw new FormatException("La clave no cumple con el formato establecido.");
+                }
+                bool esPosible = false;
+                var Keys = EncriptacionModel.ObtenerKeys(NumeroClave, DireccionArchivos);
+                if (Opcion == "Descifrar" && extensionArchivo == ".cif")
+                {
+                    extensionNuevoArchivo = ".txt";
+                    Array.Reverse(Keys);
+                    esPosible = true;
+                }
+                if (Opcion == "Cifrar" && extensionArchivo == ".txt")
+                {
+                    extensionNuevoArchivo = ".cif";
+                    esPosible = true;
+                }
+                if (esPosible)
+                {
+                    using (var lectura = new BinaryReader(ArchivoImportado.InputStream))
+                    {
+                        var byteBuffer = new byte[bufferLength];
+                        while (lectura.BaseStream.Position != lectura.BaseStream.Length)
+                        {
+                            byteBuffer = lectura.ReadBytes(bufferLength);
+                            var textoEncriptado = EncriptacionModel.SDES(DireccionArchivos, byteBuffer, Keys[0], Keys[1]);
+                            using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + nombreArchivo + extensionNuevoArchivo), FileMode.OpenOrCreate))
+                            {
+                                using (var writer = new BinaryWriter(writeStream))
+                                {
+                                    writer.Write(textoEncriptado);
+                                }
+                            }
+                        }
+                    }
+
+                }
+                else
+                {
+                    throw new FileLoadException();
+                }
+            }
+            else
+            {
+                throw new FileLoadException();
+            }
+            var FileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionNuevoArchivo;
+            return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
+        }
+        
     }
 }
