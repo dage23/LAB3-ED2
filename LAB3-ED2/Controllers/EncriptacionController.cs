@@ -3,6 +3,9 @@ using System.Web;
 using System.Web.Mvc;
 using System.IO;
 using LAB3_ED2.Models;
+using System.Drawing;
+using System.ComponentModel;
+using System.Windows;
 namespace LAB3_ED2.Controllers
 {
     public class EncriptacionController : Controller
@@ -47,6 +50,8 @@ namespace LAB3_ED2.Controllers
                                 writer.Write(textoDescifrado);
                             }
                         }
+                        var fileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionNuevoArchivo;
+                        return File(fileVirtualPath, "application / force - download", Path.GetFileName(fileVirtualPath));
                     }
                     if (Opcion == "Cifrar" && extensionArchivo == ".txt")
                     {
@@ -59,17 +64,26 @@ namespace LAB3_ED2.Controllers
                                 writer.Write(TextoCifrado);
                             }
                         }
+                        var fileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionNuevoArchivo;
+                        return File(fileVirtualPath, "application / force - download", Path.GetFileName(fileVirtualPath));
+                    }
+                    else
+                    {
+                        return View();
+                        //return System.Windows.Forms.MessageBox.Show("El archivo no es válido");
                     }
                 }
 
             }
             else
             {
-                throw new FileLoadException();
+                return View();
+                //return System.Windows.Forms.MessageBox.Show("El archivo no es válido");
             }
-            var fileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionNuevoArchivo;
-            return File(fileVirtualPath, "application / force - download", Path.GetFileName(fileVirtualPath));
+            //var fileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionNuevoArchivo;
+            //return File(fileVirtualPath, "application / force - download", Path.GetFileName(fileVirtualPath));
         }
+        
         public ActionResult CifradoCesar()
         {
             return View();
@@ -220,11 +234,13 @@ namespace LAB3_ED2.Controllers
         {
             Directory.CreateDirectory(Server.MapPath(@"~/App_Data/"));
             var extensionNuevoArchivo = string.Empty;
-            var nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
-            var extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
+            var nombreArchivo = string.Empty;
+            var extensionArchivo = string.Empty;
             var DireccionArchivos = Server.MapPath(@"~/Others/");
             if (ArchivoImportado != null)
             {
+                nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
+                extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
                 int NumeroClave = int.Parse(clave);
                 if (NumeroClave < 0 || NumeroClave > 1023)
                 {
@@ -261,19 +277,21 @@ namespace LAB3_ED2.Controllers
                             }
                         }
                     }
+                    var FileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionNuevoArchivo;
+                    return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
 
                 }
                 else
                 {
-                    throw new FileLoadException();
+                    return View();
                 }
             }
             else
             {
-                throw new FileLoadException();
+                return View();
             }
-            var FileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionNuevoArchivo;
-            return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
+            //var FileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionNuevoArchivo;
+            //return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
         }
         
     }
