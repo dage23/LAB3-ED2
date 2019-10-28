@@ -1,9 +1,10 @@
 ﻿
 @{
-    ViewBag.Title = "Cifrado S-DES";
+    ViewBag.Title = "Cifrado S-DES";    Layout = "~/Views/Shared/_Layout.cshtml";
+
 }
 
-<h2>Cifrado con método Cesar</h2>
+<h2>Cifrado con método S-DES</h2>
 @using (Html.BeginForm("CifradoSDES", "Encriptacion", FormMethod.Post, new { enctype = "multipart/form-data" }))
  {
     <h2></h2>

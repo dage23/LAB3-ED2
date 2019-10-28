@@ -3,6 +3,8 @@ using System.Web;
 using System.Web.Mvc;
 using System.IO;
 using LAB3_ED2.Models;
+using System.IO.Compression;
+
 namespace LAB3_ED2.Controllers
 {
     public class EncriptacionController : Controller
@@ -214,7 +216,6 @@ namespace LAB3_ED2.Controllers
         {
             return View();
         }
-
         [HttpPost]
         public ActionResult CifradoSDES(HttpPostedFileBase ArchivoImportado, string clave, string Opcion)
         {
@@ -275,6 +276,51 @@ namespace LAB3_ED2.Controllers
             var FileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionNuevoArchivo;
             return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
         }
-        
+
+        public ActionResult CifradoRSA()
+        {
+            return View();
+        }
+
+        public ActionResult GenerarKeysRSA()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult GenerarKeysRSA(string NumberP, string NumberQ)
+        {
+            //Key 0 = public
+            //Key 1 = private
+            var Keys = new string[2];
+            Keys = RSAEncription.GenerateKeys(NumberP, NumberQ);
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+                {
+                    var file1 = archive.CreateEntry("public.key");
+                    using (var streamWriter = new StreamWriter(file1.Open()))
+                    {
+                        streamWriter.Write(Keys[0]);
+                    }
+
+                    var file2 = archive.CreateEntry("private.key");
+                    using (var streamWriter = new StreamWriter(file2.Open()))
+                    {
+                        streamWriter.Write(Keys[1]);
+                    }
+                }
+                return File(memoryStream.ToArray(), "application/zip", "Keys.zip");
+            }
+        }
+
+        public ActionResult CifrarRSA()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult CifrarRSA(HttpPostedFileBase ArchivoImportado)
+        {
+            return View();
+        }
     }
 }

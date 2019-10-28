@@ -1,0 +1,13 @@
+﻿
+@{
+    ViewBag.Title = "Cifrado RSA"; Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<h2>Cifrado RSA</h2>
+<h3>Generar Llaves</h3>
+@Html.ActionLink("Generar Llaves RSA", "GenerarKeysRSA", "Encriptacion")
+<h3>Cifrar</h3>
+@Html.ActionLink("Cifrar con Metodo RSA", "CifrarRSA", "Encriptacion")
+<h3>Descifrar</h3>
+@Html.ActionLink("Descifrar con Metodo RSA", "DescifrarRSA", "Encriptacion")
