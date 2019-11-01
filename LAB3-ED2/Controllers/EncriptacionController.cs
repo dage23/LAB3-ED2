@@ -318,9 +318,10 @@ namespace LAB3_ED2.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult CifrarRSA(HttpPostedFileBase ArchivoImportado)
+        public ActionResult CifrarRSA(HttpPostedFileBase ArchivoImportado, HttpPostedFileBase Llave)
         {
-            return View();
+            
+                return View();
         }
     }
 }

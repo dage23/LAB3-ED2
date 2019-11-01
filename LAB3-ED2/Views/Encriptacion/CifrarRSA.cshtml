@@ -1,7 +1,22 @@
 ﻿
 @{
-    ViewBag.Title = "CifrarRSA";
+                /**/
+
+                ViewBag.Title = "CifrarRSA";
+                Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Cifrado con método RSA</h2>
+@using (Html.BeginForm("CifrarRSA", "Encriptacion", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <h2></h2>
+
+    <h4>Ingrese el archivo a cifrar</h4>
+    <input type="file" name="ArchivoImportado" />
+    <h3></h3>
+    <h4>Ingrese el archivo que contiene la llave</h4>
+    <input type="file" name="LLave" />
+    <h3></h3>
+    <input type="submit" value="Importar" class="btn btn-default" />
 }
 
-<h2>CifrarRSA</h2>
 
