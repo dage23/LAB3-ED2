@@ -320,8 +320,15 @@ namespace LAB3_ED2.Controllers
         [HttpPost]
         public ActionResult CifrarRSA(HttpPostedFileBase ArchivoImportado, HttpPostedFileBase Llave)
         {
-            
-                return View();
+            Directory.CreateDirectory(Server.MapPath(@"~/App_Data/"));
+            var archivoLlave = Path.GetFileNameWithoutExtension(Llave.FileName);
+            var extensionLlave = Path.GetExtension(Llave.FileName);
+            var DireccionArchivos = Server.MapPath(@"~/Others/");
+            if (archivoLlave != null && extensionLlave==".key")
+            {
+
+            }
+            return View();
         }
     }
 }
