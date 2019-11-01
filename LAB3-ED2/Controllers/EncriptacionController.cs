@@ -324,11 +324,46 @@ namespace LAB3_ED2.Controllers
             var archivoLlave = Path.GetFileNameWithoutExtension(Llave.FileName);
             var extensionLlave = Path.GetExtension(Llave.FileName);
             var DireccionArchivos = Server.MapPath(@"~/Others/");
-            if (archivoLlave != null && extensionLlave==".key")
-            {
 
+            var extensionNuevoArchivo = string.Empty;
+            var nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
+            var extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
+            
+            if (archivoLlave != null && ArchivoImportado != null && extensionLlave==".key" && extensionArchivo==".txt")
+            {
+                string[] llave;
+                using (var lectura = new StreamReader(Llave.InputStream))
+                {
+                    llave = lectura.ReadLine().Split(',');
+                }//llave[0]=d y llave[1]=N 
+                using (var lectura = new BinaryReader(ArchivoImportado.InputStream))
+                {
+                    var byteBuffer = new byte[bufferLength];
+                    while (lectura.BaseStream.Position != lectura.BaseStream.Length)
+                    {
+                        byteBuffer = lectura.ReadBytes(bufferLength);
+                        var textoEncriptado = string.Empty;
+                        if (archivoLlave == "private")
+                        {
+                            textoEncriptado = RSAEncription.Compresion(byteBuffer, llave);
+                        }
+                        if (archivoLlave == "public")
+                        {
+                            textoEncriptado = RSAEncription.Descompresion(byteBuffer, llave);
+                        }
+                        
+                        using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + nombreArchivo + extensionNuevoArchivo), FileMode.OpenOrCreate))
+                        {
+                            using (var writer = new BinaryWriter(writeStream))
+                            {
+                                writer.Write(textoEncriptado);
+                            }
+                        }
+                    }
+                }
+                
             }
-            return View();
+                return View();
         }
     }
 }

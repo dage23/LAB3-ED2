@@ -71,6 +71,15 @@ namespace LAB3_ED2.Models
             else
                 return false;
         }
-
+        public static string Compresion(byte[] buffer, string []llaves)
+        {
+            var regresa = string.Empty;
+            return regresa;
+        }
+        public static string Descompresion(byte[] buffer, string[] llaves)
+        {
+            var regresa = string.Empty;
+            return regresa;
+        }
     }
 }
