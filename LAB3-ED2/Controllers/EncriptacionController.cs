@@ -324,12 +324,11 @@ namespace LAB3_ED2.Controllers
             var archivoLlave = Path.GetFileNameWithoutExtension(Llave.FileName);
             var extensionLlave = Path.GetExtension(Llave.FileName);
             var DireccionArchivos = Server.MapPath(@"~/Others/");
-
-            var extensionNuevoArchivo = string.Empty;
+            
             var nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
             var extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
-            
-            if (archivoLlave != null && ArchivoImportado != null && extensionLlave==".key" && extensionArchivo==".txt")
+
+            if (archivoLlave != null && ArchivoImportado != null && extensionLlave == ".key" && extensionArchivo == ".txt")
             {
                 string[] llave;
                 using (var lectura = new StreamReader(Llave.InputStream))
@@ -351,8 +350,8 @@ namespace LAB3_ED2.Controllers
                         {
                             textoEncriptado = RSAEncription.Descompresion(byteBuffer, llave);
                         }
-                        
-                        using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + nombreArchivo + extensionNuevoArchivo), FileMode.OpenOrCreate))
+
+                        using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + nombreArchivo + extensionArchivo), FileMode.OpenOrCreate))
                         {
                             using (var writer = new BinaryWriter(writeStream))
                             {
@@ -361,9 +360,13 @@ namespace LAB3_ED2.Controllers
                         }
                     }
                 }
-                
+                var FileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionArchivo;
+                return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
             }
+            else
+            {
                 return View();
+            }    
         }
     }
 }
