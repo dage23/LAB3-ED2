@@ -350,11 +350,11 @@ namespace LAB3_ED2.Controllers
                             using (var writer = new BinaryWriter(writeStream))
                             {                                
                                 byteBuffer =   lectura.ReadBytes(bufferLength);
-                                if (archivoLlave == "private")
+                                if (archivoLlave == "public")
                                 {
                                     textoEncriptado = RSAEncription.Cifrado(byteBuffer, llave);
                                 }
-                                if (archivoLlave == "public")
+                                if (archivoLlave == "private")
                                 {
                                     textoEncriptado = RSAEncription.Descifrado(byteBuffer, llave);
                                 }

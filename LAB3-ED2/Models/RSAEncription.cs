@@ -108,8 +108,14 @@ namespace LAB3_ED2.Models
             var N = Convert.ToInt16(llaves[1]);
             char[] regresa = null;
             if (N >= cantTotalDeCaracteres)
-            {
-
+            {                
+                regresa = new char[buffer.Length / 2];
+                for (int i = 0; i < buffer.Length; i += 2)
+                {
+                    var operacion = (buffer[i] * cantTotalDeCaracteres) + buffer[i++];
+                    var caracter = Convert.ToInt16(Math.Pow(operacion, d) % N);
+                    regresa[i++] = Convert.ToChar(caracter);
+                }
             }
             else
             {
