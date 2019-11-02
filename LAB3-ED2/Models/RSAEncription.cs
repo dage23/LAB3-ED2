@@ -103,7 +103,24 @@ namespace LAB3_ED2.Models
         }
         public static char[] Descifrado(byte[] buffer, string[] llaves)
         {
-            var regresa = new char[2];
+            int cantTotalDeCaracteres = 100;//PREGUNTAR ???
+            var d = Convert.ToInt16(llaves[0]);
+            var N = Convert.ToInt16(llaves[1]);
+            char[] regresa = null;
+            if (N >= cantTotalDeCaracteres)
+            {
+
+            }
+            else
+            {
+                regresa = new char[buffer.Length];
+                for (int i = 0; i < buffer.Length; i++)
+                {
+                    var operacion = Convert.ToInt16(Math.Pow(buffer[i], d) % N);
+                    regresa[i] = Convert.ToChar(operacion);
+                }
+            }
+            
             return regresa;
         }
     }
