@@ -76,21 +76,29 @@ namespace LAB3_ED2.Models
             int cantTotalDeCaracteres = 100;//PREGUNTAR ???
             var e = Convert.ToInt16(llaves[0]);
             var N = Convert.ToInt16(llaves[1]);
-            char[] regresa = null;
-            var numMax = ((cantTotalDeCaracteres ^ e) % N)/ cantTotalDeCaracteres;
-            if (numMax == 0)
+            char[] regresa = null;            
+            if (N>=cantTotalDeCaracteres )
             {
-                regresa = new char[buffer.Length];
-                for (int i = 0; i < buffer.Length; i++)
+                var numVueltas = (N - 1) / cantTotalDeCaracteres;
+                var binarioNumVueltas = Convert.ToString(numVueltas, 2);
+                regresa = new char[buffer.Length * 2];
+                for (int i = 0; i < buffer.Length; i += 2)
                 {
-                    regresa[i] = Convert.ToChar((buffer[i] ^ e) % N);
+                    var vueltas = Convert.ToInt16((Math.Pow(buffer[i], e) % N) / cantTotalDeCaracteres);
+                    regresa[i] = Convert.ToChar(vueltas);
+                    var caracter = Convert.ToInt16((Math.Pow(buffer[i], e) % N) % cantTotalDeCaracteres);
+                    regresa[i++] = Convert.ToChar(caracter);
                 }
             }
             else
             {
-                var binarioNumVueltas = Convert.ToString(numMax, 2);
+                regresa = new char[buffer.Length];
+                for (int i = 0; i < buffer.Length; i++)
+                {
+                    var operacion = Convert.ToInt16(Math.Pow(buffer[i], e) % N);
+                    regresa[i] = Convert.ToChar(operacion);
+                }
             }
-            
             return regresa;
         }
         public static char[] Descifrado(byte[] buffer, string[] llaves)

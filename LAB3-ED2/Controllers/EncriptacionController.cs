@@ -342,31 +342,22 @@ namespace LAB3_ED2.Controllers
                 {
                     var byteBuffer = new byte[bufferLength];
                     char[] textoEncriptado = null;
+                    
                     while (lectura.BaseStream.Position != lectura.BaseStream.Length)
                     {
-                        byteBuffer =   lectura.ReadBytes(bufferLength);
-                        if (archivoLlave == "private")
-                        {
-                            textoEncriptado = RSAEncription.Cifrado(byteBuffer, llave);
-                        }
-                        if (archivoLlave == "public")
-                        {
-                            textoEncriptado = RSAEncription.Descifrado(byteBuffer, llave);
-                        }
-                        //int[] A = new int[5];
-                        //char[] B = new char[A.Length];
-                        //byte[] C = new byte[B.Length];
-                        //for (int i = 0; i < A.Length; i++)
-                        //{
-                        //    B[i] = Convert.ToChar(A[i]);
-                        //    C[i] = Convert.ToByte(B[i]);
-                        //}
-
-
                         using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + nombreArchivo + extensionArchivo), FileMode.OpenOrCreate))
                         {
                             using (var writer = new BinaryWriter(writeStream))
-                            {
+                            {                                
+                                byteBuffer =   lectura.ReadBytes(bufferLength);
+                                if (archivoLlave == "private")
+                                {
+                                    textoEncriptado = RSAEncription.Cifrado(byteBuffer, llave);
+                                }
+                                if (archivoLlave == "public")
+                                {
+                                    textoEncriptado = RSAEncription.Descifrado(byteBuffer, llave);
+                                }
                                 writer.Write(textoEncriptado);
                             }
                         }
@@ -377,7 +368,7 @@ namespace LAB3_ED2.Controllers
             }
             else
             {
-                a
+                
                 return View();
             }    
         }
