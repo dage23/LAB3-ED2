@@ -15,63 +15,107 @@ namespace LAB3_ED2.Models
             var numeroQ = long.Parse(NumberQ);
             var numeroN = numeroP * numeroQ;
             var numeroPhi = (numeroP - 1) * (numeroQ - 1);
-            var listaCoprimosPhi = new List<int>();
-            var aux = 2;
-            while (aux < numeroPhi)
+            var numeroE = 0;
+            List<int> A = new List<int>();
+            for (int i = 2; i <= numeroN; i++)
             {
-                if (coprime(aux, numeroPhi))
+                if (numeroPhi >= i && numeroPhi % i == 0)
                 {
-                    listaCoprimosPhi.Add(aux);
+                    A.Add(i);
                 }
-                aux++;
+                if (numeroN % i == 0)
+                {
+                    A.Add(i);
+                }
             }
-            aux = 1;
-            var Arreglo1 = new long[50];
-            var Arreglo2 = new long[50];
-            var Arreglo3 = new long[50];
-            var Arreglo4 = new long[50];
-            Arreglo2[0] = numeroPhi;Arreglo2[1] = listaCoprimosPhi[0];
-            Arreglo3[0] = 1;Arreglo3[1] = 0;
-            Arreglo4[0] = 0;Arreglo4[1] = 1;
-
-            while (Arreglo2[aux]!=0)
+            var encontrado = true;
+            for (int i = Convert.ToInt32(numeroPhi); i > 0; i--)
             {
-                Arreglo1[aux+1] = Arreglo2[aux -1] / Arreglo2[aux];
-                Arreglo2[aux + 1] = Arreglo2[aux - 1] - Arreglo1[aux + 1] * Arreglo2[aux];
-                Arreglo3[aux + 1] = Arreglo3[aux - 1] - Arreglo1[aux + 1] * Arreglo3[aux];
-                Arreglo4[aux + 1] = Arreglo4[aux - 1] - Arreglo1[aux + 1] * Arreglo4[aux];
-                aux++;
+                encontrado = true;
+                foreach (var item in A)
+                {
+                    if (i % item == 0)
+                    {
+                        encontrado = false;
+                    }
+                }
+                if (encontrado)
+                {
+                    numeroE = i;
+                    i = 0;
+                }
             }
-            if (Arreglo4[aux-1]<0)
-            {
-                Arreglo4[aux - 1] = Arreglo4[aux - 1] + numeroPhi;
-            }
+            var numeroD = FindingD(numeroE, Convert.ToInt32(numeroPhi));
             var keys = new string[2];
-            keys[0] = listaCoprimosPhi[0] + "," + numeroN;
-            keys[1] = Arreglo4[aux - 1] + "," + numeroN;
+            var phis = numeroPhi;
+            keys[0] = numeroE + "," + numeroN;
+            keys[1] = numeroD + "," + numeroN;
 
             return keys;
         }
-        static long GCM(long a, long b)
+        public static string FindingD(int e, int phi)
         {
-            if (a == 0 || b == 0)
-                return 0;
+            var A = phi;
+            var B = e;
+            var C = A % B;
+            var D = A / B;
+            List<int> AValues = new List<int>();
+            List<int> BValues = new List<int>();
+            List<int> CValues = new List<int>();
+            List<int> DValues = new List<int>();
+            AValues.Add(A);
+            BValues.Add(B);
+            CValues.Add(C);
+            DValues.Add(D);
+            while (C != 0)
+            {
+                A = B;
+                B = C;
+                C = A % B;
+                if (C != 0)
+                {
+                    AValues.Add(A);
+                    BValues.Add(B);
+                    CValues.Add(C);
+                    DValues.Add(D);
+                }
 
-            if (a == b)
-                return a;
-
-            if (a > b)
-                return GCM(a - b, b);
-
-            return GCM(a, b - a);
-        }
-        static bool coprime(long a, long b)
-        {
-            if (GCM(a, b) == 1)
-                return true;
+            }
+            AValues.Reverse();
+            BValues.Reverse();
+            CValues.Reverse();
+            DValues.Reverse();
+            var charAValues = AValues.ToArray();
+            var charBValues = BValues.ToArray();
+            var charCValues = CValues.ToArray();
+            var charDValues = DValues.ToArray();
+            //inverso
+            int cont = 0;
+            var E = charAValues[cont];
+            var F = 1;
+            var G = charBValues[cont];
+            var H = charDValues[cont];
+            cont++;
+            while (E != phi)
+            {
+                var aux = F;
+                F = H;
+                H = (charCValues[cont] * H) + aux;
+                G = E;
+                E = charAValues[cont];
+            }
+            var d = 0;
+            if ((H * e) % phi == 1)
+            {
+                d = H;
+            }
             else
-                return false;
+            {
+                d = phi - H;
+            }
+            return d.ToString();
         }
+
         public static byte[] Cifrado(byte[] buffer, string[] llaves)
         {
             int cantTotalDeCaracteres = 255;//PREGUNTAR ???
