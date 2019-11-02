@@ -323,53 +323,105 @@ namespace LAB3_ED2.Controllers
         [HttpPost]
         public ActionResult CifrarRSA(HttpPostedFileBase ArchivoImportado, HttpPostedFileBase Llave)
         {
-            Directory.CreateDirectory(Server.MapPath(@"~/App_Data/"));
-            var archivoLlave = Path.GetFileNameWithoutExtension(Llave.FileName);
-            var extensionLlave = Path.GetExtension(Llave.FileName);
-            var DireccionArchivos = Server.MapPath(@"~/Others/");
-            
-            var nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
-            var extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
-
-            if (archivoLlave != null && ArchivoImportado != null && extensionLlave == ".key" && extensionArchivo == ".txt")
+            if (ArchivoImportado != null && Llave != null)
             {
-                string[] llave;
-                using (var lectura = new StreamReader(Llave.InputStream))
+                Directory.CreateDirectory(Server.MapPath(@"~/App_Data/"));
+                var archivoLlave = Path.GetFileName(Llave.FileName);
+                var extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
+                var extensionLlave = Path.GetExtension(Llave.FileName);
+                var nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
+                var DireccionArchivos = Server.MapPath(@"~/Others/");
+                if (extensionLlave == ".key" && extensionArchivo == ".txt")
                 {
-                    llave = lectura.ReadLine().Split(',');
-                }//llave[0]=d y llave[1]=N 
-                using (var lectura = new BinaryReader(ArchivoImportado.InputStream))
-                {
-                    var byteBuffer = new byte[bufferLength];
-                    char[] textoEncriptado = null;
-                    
-                    while (lectura.BaseStream.Position != lectura.BaseStream.Length)
+                    string[] llave;
+                    using (var lectura = new StreamReader(Llave.InputStream))
                     {
-                        using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + nombreArchivo + extensionArchivo), FileMode.OpenOrCreate))
+                        llave = lectura.ReadLine().Split(',');
+                    }//llave[0]=d y llave[1]=N 
+                    using (var lectura = new BinaryReader(ArchivoImportado.InputStream))
+                    {
+                        var byteBuffer = new byte[bufferLength];
+                        char[] textoEncriptado = null;
+
+                        while (lectura.BaseStream.Position != lectura.BaseStream.Length)
                         {
-                            using (var writer = new BinaryWriter(writeStream))
-                            {                                
-                                byteBuffer =   lectura.ReadBytes(bufferLength);
-                                if (archivoLlave == "public")
+                            using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + nombreArchivo + ".rsacif"), FileMode.OpenOrCreate))
+                            {
+                                using (var writer = new BinaryWriter(writeStream))
                                 {
+                                    byteBuffer = lectura.ReadBytes(bufferLength);
                                     textoEncriptado = RSAEncription.Cifrado(byteBuffer, llave);
+                                    writer.Write(textoEncriptado);
                                 }
-                                if (archivoLlave == "private")
-                                {
-                                    textoEncriptado = RSAEncription.Descifrado(byteBuffer, llave);
-                                }
-                                writer.Write(textoEncriptado);
                             }
                         }
                     }
+                    var FileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionArchivo;
+                    return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
                 }
-                var FileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionArchivo;
-                return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
+                else
+                {
+                    throw new FormatException("");
+                }
             }
             else
             {
-                
-                return View();
+                throw new FormatException("");
+            }
+        }
+    
+
+        public ActionResult DescifrarRSA()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult DescifrarRSA(HttpPostedFileBase ArchivoImportado, HttpPostedFileBase Llave)
+        {           
+            if (ArchivoImportado != null && Llave != null)
+            {
+                Directory.CreateDirectory(Server.MapPath(@"~/App_Data/"));
+                var archivoLlave = Path.GetFileName(Llave.FileName);
+                var extensionArchivo = Path.GetExtension(ArchivoImportado.FileName);
+                var extensionLlave = Path.GetExtension(Llave.FileName);
+                var nombreArchivo = Path.GetFileNameWithoutExtension(ArchivoImportado.FileName);
+                var DireccionArchivos = Server.MapPath(@"~/Others/");
+                if (extensionLlave == ".key" && extensionArchivo == ".rsacif")
+                {
+                    string[] llave;
+                    using (var lectura = new StreamReader(Llave.InputStream))
+                    {
+                        llave = lectura.ReadLine().Split(',');
+                    }//llave[0]=d y llave[1]=N 
+                    using (var lectura = new BinaryReader(ArchivoImportado.InputStream))
+                    {
+                        var byteBuffer = new byte[bufferLength];
+                        char[] textoEncriptado = null;
+
+                        while (lectura.BaseStream.Position != lectura.BaseStream.Length)
+                        {
+                            using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + nombreArchivo + ".txt"), FileMode.OpenOrCreate))
+                            {
+                                using (var writer = new BinaryWriter(writeStream))
+                                {
+                                    byteBuffer = lectura.ReadBytes(bufferLength);
+                                    textoEncriptado = RSAEncription.Descifrado(byteBuffer, llave);
+                                    writer.Write(textoEncriptado);
+                                }
+                            }
+                        }
+                    }
+                    var FileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionArchivo;
+                    return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
+                }
+                else
+                {
+                    throw new FormatException("");
+                }
+            }
+            else
+            {
+                throw new FormatException("");
             }    
         }
     }

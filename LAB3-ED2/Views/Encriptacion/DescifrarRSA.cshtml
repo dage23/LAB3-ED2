@@ -1,0 +1,19 @@
+﻿@{
+    /**/
+
+    ViewBag.Title = "DescifrarRSA";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Descifrado con método RSA</h2>
+@using (Html.BeginForm("DescifrarRSA", "Encriptacion", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <h2></h2>
+
+    <h4>Ingrese el archivo a descifrar</h4>
+    <input type="file" name="ArchivoImportado" />
+    <h3></h3>
+    <h4>Ingrese el archivo que contiene la llave</h4>
+    <input type="file" name="LLave" />
+    <h3></h3>
+    <input type="submit" value="Importar" class="btn btn-default" />
+}
