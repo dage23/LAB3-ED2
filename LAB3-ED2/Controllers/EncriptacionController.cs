@@ -11,7 +11,7 @@ using System.Web.UI.WebControls;
 
 namespace LAB3_ED2.Controllers
 {
-    public class EncriptacionController : Controller
+    public class EncriptacionController : BaseController
     {
         const int bufferLength = 100;
         public ActionResult Menu()
@@ -270,14 +270,17 @@ namespace LAB3_ED2.Controllers
                 }
                 else
                 {
-                    throw new FileLoadException();
+                    Danger("Formato de entrada erronea, por favor, revisalo", true);
+                    return View();
                 }
             }
             else
             {
-                throw new FileLoadException();
+                Danger("Archivo nulo, por favor, revisalo", true);
+                return View();
             }
             var FileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionNuevoArchivo;
+            Success("Archivo procesado exitosamente", true);
             return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
         }
 
@@ -313,6 +316,7 @@ namespace LAB3_ED2.Controllers
                         streamWriter.Write(Keys[1]);
                     }
                 }
+                Success("Llaves generadas exitosamente!", true);
                 return File(memoryStream.ToArray(), "application/zip", "Keys.zip");
             }
         }
@@ -342,7 +346,7 @@ namespace LAB3_ED2.Controllers
                     using (var lectura = new BinaryReader(ArchivoImportado.InputStream))
                     {
                         var byteBuffer = new byte[bufferLength];
-                        char[] textoEncriptado = null;
+                        byte[] textoEncriptado = null;
 
                         while (lectura.BaseStream.Position != lectura.BaseStream.Length)
                         {
@@ -357,17 +361,20 @@ namespace LAB3_ED2.Controllers
                             }
                         }
                     }
-                    var FileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionArchivo;
+                    Success("Archivo comprimido correctamente", true);
+                    var FileVirtualPath = @"~/App_Data/" + nombreArchivo + ".rsacif";
                     return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
                 }
                 else
                 {
-                    throw new FormatException("");
+                    Danger("Formato de entrada incorrecto", true);
+                    return View();
                 }
             }
             else
             {
-                throw new FormatException("");
+                Danger("Archivo nulo", true);
+                return View();
             }
         }
     
@@ -397,7 +404,7 @@ namespace LAB3_ED2.Controllers
                     using (var lectura = new BinaryReader(ArchivoImportado.InputStream))
                     {
                         var byteBuffer = new byte[bufferLength];
-                        char[] textoEncriptado = null;
+                        byte[] textoEncriptado = null;
 
                         while (lectura.BaseStream.Position != lectura.BaseStream.Length)
                         {
@@ -412,18 +419,21 @@ namespace LAB3_ED2.Controllers
                             }
                         }
                     }
-                    var FileVirtualPath = @"~/App_Data/" + nombreArchivo + extensionArchivo;
+                    Success("Archivo comprimido correctamente", true);
+                    var FileVirtualPath = @"~/App_Data/" + nombreArchivo + ".txt";
                     return File(FileVirtualPath, "application / force - download", Path.GetFileName(FileVirtualPath));
                 }
                 else
                 {
-                    throw new FormatException("");
+                    Danger("Formato de entrada incorrecto", true);
+                    return View();
                 }
             }
             else
             {
-                throw new FormatException("");
-            }    
+                Danger("Archivo nulo", true);
+                return View();
+            }
         }
     }
 }

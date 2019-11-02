@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Web;
+using System.Security.Cryptography;
 
 namespace LAB3_ED2.Models
 {
@@ -23,31 +25,30 @@ namespace LAB3_ED2.Models
                 }
                 aux++;
             }
-            aux = 0;
-            var numeroE = new List<long>();
-            while (aux < listaCoprimosPhi.Count)
+            aux = 1;
+            var Arreglo1 = new long[50];
+            var Arreglo2 = new long[50];
+            var Arreglo3 = new long[50];
+            var Arreglo4 = new long[50];
+            Arreglo2[0] = numeroPhi;Arreglo2[1] = listaCoprimosPhi[0];
+            Arreglo3[0] = 1;Arreglo3[1] = 0;
+            Arreglo4[0] = 0;Arreglo4[1] = 1;
+
+            while (Arreglo2[aux]!=0)
             {
-                if (coprime(listaCoprimosPhi[aux], numeroN))
-                {
-                    numeroE.Add(listaCoprimosPhi[aux]);
-                }
+                Arreglo1[aux+1] = Arreglo2[aux -1] / Arreglo2[aux];
+                Arreglo2[aux + 1] = Arreglo2[aux - 1] - Arreglo1[aux + 1] * Arreglo2[aux];
+                Arreglo3[aux + 1] = Arreglo3[aux - 1] - Arreglo1[aux + 1] * Arreglo3[aux];
+                Arreglo4[aux + 1] = Arreglo4[aux - 1] - Arreglo1[aux + 1] * Arreglo4[aux];
                 aux++;
             }
-            var diccionario = new List<long>();
-            aux = 1;
-            while (diccionario.Count < 2)
+            if (Arreglo4[aux-1]<0)
             {
-
-                if ((aux * numeroE[0]) % numeroPhi == 1)
-                {
-                    diccionario.Add(aux);
-                }
-                aux++;
-            }           
-
+                Arreglo4[aux - 1] = Arreglo4[aux - 1] + numeroPhi;
+            }
             var keys = new string[2];
-            keys[0] = numeroE[0] + "," + numeroN;
-            keys[1] = diccionario[1] + "," + numeroN;
+            keys[0] = listaCoprimosPhi[0] + "," + numeroN;
+            keys[1] = Arreglo4[aux - 1] + "," + numeroN;
 
             return keys;
         }
@@ -71,62 +72,62 @@ namespace LAB3_ED2.Models
             else
                 return false;
         }
-        public static char[] Cifrado(byte[] buffer, string []llaves)
+        public static byte[] Cifrado(byte[] buffer, string[] llaves)
         {
-            int cantTotalDeCaracteres = 100;//PREGUNTAR ???
+            int cantTotalDeCaracteres = 255;//PREGUNTAR ???
             var e = Convert.ToInt16(llaves[0]);
             var N = Convert.ToInt16(llaves[1]);
-            char[] regresa = null;            
-            if (N>=cantTotalDeCaracteres )
+            byte[] regresa;
+            if (N >= cantTotalDeCaracteres)
             {
                 var numVueltas = (N - 1) / cantTotalDeCaracteres;
                 var binarioNumVueltas = Convert.ToString(numVueltas, 2);
-                regresa = new char[buffer.Length * 2];
+                regresa = new byte[buffer.Length * 2];
                 for (int i = 0; i < buffer.Length; i += 2)
                 {
-                    var vueltas = Convert.ToInt16((Math.Pow(buffer[i], e) % N) / cantTotalDeCaracteres);
-                    regresa[i] = Convert.ToChar(vueltas);
-                    var caracter = Convert.ToInt16((Math.Pow(buffer[i], e) % N) % cantTotalDeCaracteres);
-                    regresa[i++] = Convert.ToChar(caracter);
+                    BigInteger vueltas = BigInteger.ModPow(buffer[i], e, N) / cantTotalDeCaracteres;
+                    regresa[i] = Convert.ToByte(long.Parse(vueltas.ToString()));
+                    BigInteger caracter = (BigInteger.ModPow(buffer[i], e, N) % cantTotalDeCaracteres);
+                    regresa[i++] = Convert.ToByte(long.Parse(caracter.ToString()));
                 }
             }
             else
             {
-                regresa = new char[buffer.Length];
+                regresa = new byte[buffer.Length];
                 for (int i = 0; i < buffer.Length; i++)
                 {
-                    var operacion = Convert.ToInt16(Math.Pow(buffer[i], e) % N);
-                    regresa[i] = Convert.ToChar(operacion);
+                    BigInteger operacion = BigInteger.ModPow(buffer[i], e, N);
+                    regresa[i] = Convert.ToByte(long.Parse(operacion.ToString()));
                 }
             }
             return regresa;
         }
-        public static char[] Descifrado(byte[] buffer, string[] llaves)
+        public static byte[] Descifrado(byte[] buffer, string[] llaves)
         {
-            int cantTotalDeCaracteres = 100;//PREGUNTAR ???
+            int cantTotalDeCaracteres = 255;//PREGUNTAR ???
             var d = Convert.ToInt16(llaves[0]);
             var N = Convert.ToInt16(llaves[1]);
-            char[] regresa = null;
+            byte[] regresa;
             if (N >= cantTotalDeCaracteres)
-            {                
-                regresa = new char[buffer.Length / 2];
+            {
+                regresa = new byte[buffer.Length / 2];
                 for (int i = 0; i < buffer.Length; i += 2)
                 {
                     var operacion = (buffer[i] * cantTotalDeCaracteres) + buffer[i++];
-                    var caracter = Convert.ToInt16(Math.Pow(operacion, d) % N);
-                    regresa[i++] = Convert.ToChar(caracter);
+                    BigInteger caracter = BigInteger.ModPow(operacion, d, N);
+                    regresa[i++] = Convert.ToByte(long.Parse(caracter.ToString()));
                 }
             }
             else
             {
-                regresa = new char[buffer.Length];
+                regresa = new byte[buffer.Length];
                 for (int i = 0; i < buffer.Length; i++)
                 {
-                    var operacion = Convert.ToInt16(Math.Pow(buffer[i], d) % N);
-                    regresa[i] = Convert.ToChar(operacion);
+                    BigInteger operacion = BigInteger.ModPow(buffer[i], d, N);
+                    regresa[i] = Convert.ToByte(long.Parse(operacion.ToString()));
                 }
             }
-            
+
             return regresa;
         }
     }
