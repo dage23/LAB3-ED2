@@ -74,15 +74,22 @@ namespace LAB3_ED2.Models
         public static char[] Cifrado(byte[] buffer, string []llaves)
         {
             int cantTotalDeCaracteres = 100;//PREGUNTAR ???
-            var b = Convert.ToInt16(llaves[0]);
+            var e = Convert.ToInt16(llaves[0]);
             var N = Convert.ToInt16(llaves[1]);
-            
-            var numMax = ((cantTotalDeCaracteres ^ b) % N)/ cantTotalDeCaracteres;
-            if (numMax==0)
+            char[] regresa = null;
+            var numMax = ((cantTotalDeCaracteres ^ e) % N)/ cantTotalDeCaracteres;
+            if (numMax == 0)
             {
-
+                regresa = new char[buffer.Length];
+                for (int i = 0; i < buffer.Length; i++)
+                {
+                    regresa[i] = Convert.ToChar((buffer[i] ^ e) % N);
+                }
             }
-            var binarioNumVueltas = Convert.ToString(numMax, 2);
+            else
+            {
+                var binarioNumVueltas = Convert.ToString(numMax, 2);
+            }
             
             return regresa;
         }
