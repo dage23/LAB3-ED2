@@ -338,18 +338,27 @@ namespace LAB3_ED2.Controllers
                 using (var lectura = new BinaryReader(ArchivoImportado.InputStream))
                 {
                     var byteBuffer = new byte[bufferLength];
+                    char[] textoEncriptado = null;
                     while (lectura.BaseStream.Position != lectura.BaseStream.Length)
                     {
-                        byteBuffer = lectura.ReadBytes(bufferLength);
-                        var textoEncriptado = string.Empty;
+                        byteBuffer =   lectura.ReadBytes(bufferLength);
                         if (archivoLlave == "private")
                         {
-                            textoEncriptado = RSAEncription.Compresion(byteBuffer, llave);
+                            textoEncriptado = RSAEncription.Cifrado(byteBuffer, llave);
                         }
                         if (archivoLlave == "public")
                         {
-                            textoEncriptado = RSAEncription.Descompresion(byteBuffer, llave);
+                            textoEncriptado = RSAEncription.Descifrado(byteBuffer, llave);
                         }
+                        //int[] A = new int[5];
+                        //char[] B = new char[A.Length];
+                        //byte[] C = new byte[B.Length];
+                        //for (int i = 0; i < A.Length; i++)
+                        //{
+                        //    B[i] = Convert.ToChar(A[i]);
+                        //    C[i] = Convert.ToByte(B[i]);
+                        //}
+
 
                         using (var writeStream = new FileStream(Server.MapPath(@"~/App_Data/" + nombreArchivo + extensionArchivo), FileMode.OpenOrCreate))
                         {

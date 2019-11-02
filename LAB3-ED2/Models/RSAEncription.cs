@@ -71,14 +71,24 @@ namespace LAB3_ED2.Models
             else
                 return false;
         }
-        public static string Compresion(byte[] buffer, string []llaves)
+        public static char[] Cifrado(byte[] buffer, string []llaves)
         {
-            var regresa = string.Empty;
+            int cantTotalDeCaracteres = 100;//PREGUNTAR ???
+            var b = Convert.ToInt16(llaves[0]);
+            var N = Convert.ToInt16(llaves[1]);
+            
+            var numMax = ((cantTotalDeCaracteres ^ b) % N)/ cantTotalDeCaracteres;
+            if (numMax==0)
+            {
+
+            }
+            var binarioNumVueltas = Convert.ToString(numMax, 2);
+            
             return regresa;
         }
-        public static string Descompresion(byte[] buffer, string[] llaves)
+        public static char[] Descifrado(byte[] buffer, string[] llaves)
         {
-            var regresa = string.Empty;
+            var regresa = new char[2];
             return regresa;
         }
     }
